@@ -13,7 +13,8 @@ body {
 
 .faux-window {
 	position: absolute;
-	border: 1px solid black;
+	border: 1px solid #333;
+	border-radius: 3px;
 	box-shadow: 3px 3px 3px 3px rgba(0, 0, 0, 0.25);
 	display: flex;
 	flex-direction: column;
@@ -21,13 +22,19 @@ body {
 }
 
 .window-header {
-	width: 100%;
-	background-color: gray;
+	background-color: #333;
+	opacity: 0.8;
 	cursor: move;
+	padding: 8px 0px 8px 5px;
 }
 
 .window-header > button {
-	float: right;;
+	float: left;
+	cursor: pointer;
+	border-radius: 10px;
+    padding: 5px;
+    margin-left: 7px;
+    border: none;
 }
 
 .terminal,
@@ -37,8 +44,16 @@ body {
 	outline: none;
 }
 
-button {
-	cursor: pointer;
+button.close {
+	background: red;
+}
+
+button.maximize {
+	background: green;
+}
+
+button.minimize {
+	background: orange;
 }
 
 .editor {
