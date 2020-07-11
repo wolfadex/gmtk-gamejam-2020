@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import { render } from "react-dom";
-import dog_1 from "./images/dog_1.jpg";
-import dog_2 from "./images/dog_2.jpg";
-import cat_1_1 from "./images/cat_1_1.jpg";
-import cat_2_1 from "./images/cat_2_1.jpg";
+import dog_1 from "./assets/dog_1.jpg";
+import dog_2 from "./assets/dog_2.jpg";
+import cat_1_1 from "./assets/cat_1_1.jpg";
+import cat_2_1 from "./assets/cat_2_1.jpg";
+import sound_1 from "./assets/sound_1.wav";
+
+const popupSound = new Audio(sound_1);
 
 
 render(<Game />, document.getElementById("root"))
@@ -13,7 +16,8 @@ function Game() {
 	const [popups, setPopups] = useState({});
 
 	useInterval(() => {
-		setPopups({...popups, [uuidv4()]: getPhoto() })
+		setPopups({...popups, [uuidv4()]: getPhoto() });
+		popupSound.play();
 	}, 3000)
 
 	return (
