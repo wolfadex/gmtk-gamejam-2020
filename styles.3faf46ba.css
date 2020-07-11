@@ -1,2 +1,2 @@
 .previous-commands{list-style:none;padding:0;margin:0}.faux-window,.previous-commands{display:flex;flex-direction:column}.faux-window{position:absolute;border:1px solid #000;box-shadow:3px 3px 3px 3px rgba(0,0,0,.25);background-color:#fff}.window-header{width:100%;background-color:grey;cursor:move}.window-header>button{float:right}.terminal,.terminal:active,.terminal:focused{border-width:0;outline:none}button{cursor:pointer}.editor{width:500px;height:500px}.shadowText{position:absolute;opacity:.1;z-index:0}
-/*# sourceMappingURL=gmtk-gamejam-2020/styles.3faf46ba.css.map */
+/*# sourceMappingURL=/styles.3faf46ba.css.map */
