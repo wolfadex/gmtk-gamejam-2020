@@ -6,7 +6,9 @@ body {
 }
 
 body {
-	background: linear-gradient(45deg, cyan, orange 60%, orange);
+	background-color: #21D4FD;
+	background-image: linear-gradient(225deg, #21D4FD 0%, #B721FF 100%);
+	/*background: linear-gradient(45deg, cyan, orange 60%, orange);*/
 }
 
 .previous-commands {
@@ -63,7 +65,60 @@ button.minimize {
 	background: orange;
 }
 
+.editor-window {
+	display: flex;
+	flex-direction: row;
+	height: 700px;
+	overflow: scroll
+}
+
+.editor-folders {
+	background: #eee;
+	font-family: 'Roboto Mono', monospace;
+	width: 125px;
+	font-size: 13px;
+}
+
+.editor-folders ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	font-size: 12px;
+}
+
+.editor-folders li {
+	padding: 2px;
+	padding-left: 10px;
+}
+
+.editor-folders li.highlighted {
+	padding-left: 20px;
+	background: #ccc;
+}
+
+.editor-gutter ul {
+	list-style: none;
+	padding: 12px 0 0;
+	margin: 10px;
+	text-align: right;
+	opacity: 0.2;
+}
+
+.editor-gutter li {
+	line-height: 16px;
+}
+
+.editor-title {
+	padding: 10px 10px 5px;
+	color: gray;
+}
+
+.editor-tab {
+	padding-top: 20px;
+}
+
 .editor {
+	line-height: 16px;
 	border: none;
     overflow: auto;
     outline: none;
@@ -79,16 +134,17 @@ button.minimize {
 	font-family: 'Inconsolata', monospace;
 }
 
-.shadowText {
+.shadow-text {
 	padding: 3px;
-	position: absolute;
 	opacity: 0.1;
+	position: absolute;
 	z-index: 0;
+	line-height: 16px;
 }
 
 .taskbar {
 	height: 32px;
-	background-color: rgb(150, 150, 150);
+	background-color: rgb(10, 10, 10, 0.7);
 	box-shadow: 3px 3px 3px 1px rgba(0, 0, 0, 0.125);
 	color: white;
 	padding-left: 8px;

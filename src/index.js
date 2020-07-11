@@ -162,11 +162,26 @@ function Terminal({ commandEntered }) {
 
 	return (
 		<Window left={40} top={40} onClose={() => {}}>
-			<div className="editorWindow">
-	           <div>
-               </div>
-    			<div>
-                    <div className="shadowText">
+			<div className="editor-window">
+	            <div className="editor-folders">
+                    <div className="editor-title">FOLDERS</div>
+                    <ul>
+                        <li>.github</li>
+                        <li>dist</li>
+                        <li>src</li>
+                        <li className="highlighted">work.cpp</li>
+                        <li>README.md</li>
+                    </ul>
+                </div>
+                <div className="editor-gutter">
+                    <ul>
+                        {Array.apply(0, Array(35)).map(function (x, i) {
+                          return <li key={i}>{i}</li>;
+                        })}
+                    </ul>
+                </div>
+    			<div className="editor-tab">
+                    <div className="shadow-text">
                         {foo.split("\n").map((i,key) => {
                             if (i.trim() === "<br>") {
                                 return <br key={key}></br>;
