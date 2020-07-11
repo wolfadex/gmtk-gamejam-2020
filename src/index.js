@@ -22,6 +22,7 @@ function Game() {
 
 	return (
 		<>
+			<div className="taskbar">BananaoS</div>
 			<Terminal commandEntered={(cmd) => {
 				// const index = popups.findIndex((word) => word === cmd);
 
@@ -123,7 +124,7 @@ function Terminal({ commandEntered }) {
 function Window({ left, top, children, onClose }) {
 	const [position, setPosition] = useState({
 		left: left != null ? left : randomInt(10, window.innerWidth - 210), 
-		top: top != null ? top : randomInt(10, window.innerHeight - 210)
+		top: top != null ? top : randomInt(42, window.innerHeight - 210)
 	});
 	const [isDragging, setDragging] = useState(false);
 
