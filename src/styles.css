@@ -36,3 +36,13 @@
 button {
 	cursor: pointer;
 }
+
+.editor {
+	width: 500px;
+	height: 500px;
+}
+
+.shadowText {
+	position: absolute;
+	opacity: 0.1;
+	z-index: 0;
