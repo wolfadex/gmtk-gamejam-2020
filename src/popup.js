@@ -15,6 +15,7 @@ customElement.define("annoying-popup", class extends HTMLElement {
 		container.appendChild(header);
 		header.appendChild(closeButton);
 
+		closeButton.innerText = "X";
 		closeButton.addEventListener('click', () => {
 			this.parentNode.removeChild(this);
 		});
