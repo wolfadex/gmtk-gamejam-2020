@@ -5,3 +5,28 @@
 	padding: 0;
 	margin: 0;
 }
+
+
+.faux-window {
+	position: absolute;
+	border: 1px solid black;
+	box-shadow: 3px 3px 3px 3px rgba(0, 0, 0, 0.25);
+	display: flex;
+	flex-direction: column;
+}
+
+.window-header {
+	width: 100%;
+	background-color: gray;
+}
+
+.window-header > button {
+	float: right;;
+}
+
+.terminal,
+.terminal:focused,
+.terminal:active {
+	border-width: 0;
+	outline: none;
+}
