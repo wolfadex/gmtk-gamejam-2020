@@ -44,6 +44,27 @@ function Game() {
 	);
 }
 
+document.querySelector("textarea").addEventListener('keydown', function(e) {
+    if (e.keyCode === 9) { // tab was pressed
+        // get caret position/selection
+        var start = this.selectionStart;
+        var end = this.selectionEnd;
+
+        var target = e.target;
+        var value = target.value;
+
+        // set textarea value to: text before caret + tab + text after caret
+        target.value = value.substring(0, start)
+                    + "  "
+                    + value.substring(end);
+
+        // put caret at right position again (add one for the tab)
+        this.selectionStart = this.selectionEnd = start + 2;
+
+        // prevent the focus lose
+        e.preventDefault();
+    }
+}, false);
 
 function createPopup() {
   const words = [
@@ -54,7 +75,7 @@ function createPopup() {
   ];
 
   const index = randomInt(0, words.length);
-  
+
   return words[index]
 }
 
@@ -64,35 +85,35 @@ function randomInt(min, max) {
   	return Math.floor(Math.random() * (max - min)) + min;
 }
 
-
 function Terminal({ commandEntered }) {
 	const [currentInput, setCurrentInput] = useState("");
 	const [previousInputs, setPreviousInputs] = useState([]);
+    const foo = `// Your First C++ Program
+                #include <iostream>
+                using namespace std;
+                <br>
+                int main() {
+                  cout << "Hello World!";
+                  return 0;
+                }`;
 
 	return (
 		<Window left={40} top={40} onClose={() => {}}>
-			<ul className="previous-commands">
-				{previousInputs.map((word, i) =>
-					<li key={i + "__" + word}>
-						word
-					</li>
-				)}
-			</ul>
 			{"$> "}
-			<div>
-				<span></span>
-				<input
-					className="terminal"
+			<div className="editorWindow">
+				<div className="shadowText">
+                    {foo.split("\n").map((i,key) => {
+                        if (i.trim() === "<br>") {
+                            return <br key={key}></br>;
+                        }
+                        return <div key={key}>{i.trim()}</div>;
+                    })}
+                </div>
+				<textarea
+					className="editor"
 					autoFocus
-					onChange={({ target: { value } }) => setCurrentInput(value)} 
-					value={currentInput} 
-					onKeyDown={({ key }) => {
-						if (key === "Enter") {
-							commandEntered(currentInput)
-							setPreviousInputs([currentInput, ...previousInputs])
-							setCurrentInput("");
-						}
-					}}
+					onChange={({ target: { value } }) => setCurrentInput(value)}
+					value={currentInput}
 				/>
 			</div>
 		</Window>
