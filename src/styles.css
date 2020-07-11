@@ -1,5 +1,12 @@
+html,
 body {
+	height: 100%;
+	margin: 0;
 	font-family: 'Inconsolata', monospace;
+}
+
+body {
+	background: linear-gradient(45deg, cyan, orange 60%, orange);
 }
 
 .previous-commands {
@@ -77,4 +84,15 @@ button.minimize {
 	position: absolute;
 	opacity: 0.1;
 	z-index: 0;
+}
+
+.taskbar {
+	height: 32px;
+	background-color: rgb(150, 150, 150);
+	box-shadow: 3px 3px 3px 1px rgba(0, 0, 0, 0.125);
+	color: white;
+	padding-left: 8px;
+	padding-right: 8px;
+	display: flex;
+	align-items: center;
 }
