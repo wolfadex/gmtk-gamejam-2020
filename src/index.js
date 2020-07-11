@@ -176,7 +176,7 @@ function Terminal({ commandEntered }) {
                 <div className="editor-gutter">
                     <ul>
                         {Array.apply(0, Array(35)).map(function (x, i) {
-                          return <li key={i}>{i}</li>;
+                          return <li key={i}>{i+1}</li>;
                         })}
                     </ul>
                 </div>
