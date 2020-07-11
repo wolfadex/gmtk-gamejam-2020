@@ -99,7 +99,6 @@ function Terminal({ commandEntered }) {
 
 	return (
 		<Window left={40} top={40} onClose={() => {}}>
-			{"$> "}
 			<div className="editorWindow">
 				<div className="shadowText">
                     {foo.split("\n").map((i,key) => {
@@ -110,6 +109,7 @@ function Terminal({ commandEntered }) {
                     })}
                 </div>
 				<textarea
+                    spellcheck="false"
 					className="editor"
 					autoFocus
 					onChange={({ target: { value } }) => setCurrentInput(value)}
@@ -120,15 +120,15 @@ function Terminal({ commandEntered }) {
 	)
 }
 
-function Window({ left, top, children, onClose }) {
+function Window({ left, top, children, onClose,  }) {
 	const [position, setPosition] = useState({
-		left: left != null ? left : randomInt(10, window.innerWidth - 210), 
+		left: left != null ? left : randomInt(10, window.innerWidth - 210),
 		top: top != null ? top : randomInt(10, window.innerHeight - 210)
 	});
 	const [isDragging, setDragging] = useState(false);
 
 	return (
-		<div 
+		<div
 			style={{ left: position.left, top: position.top }}
 			className="faux-window"
 		>
@@ -147,7 +147,7 @@ function Window({ left, top, children, onClose }) {
 				onMouseOut={(e) => {
 					e.preventDefault();
 					e.stopPropagation();
-					setDragging(false);	
+					setDragging(false);
 				}}
 				onMouseMove={(e) => {
 					if (isDragging) {
@@ -196,6 +196,6 @@ function uuidv4() {
 function getPhoto() {
 	const photos = [dog_1, dog_2, cat_1_1, cat_2_1];
 	const index = randomInt(0, photos.length);
-  
+
   	return photos[index]
 }
