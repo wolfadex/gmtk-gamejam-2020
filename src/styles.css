@@ -153,6 +153,7 @@ button.minimize {
 }
 
 .shadow-text {
+	user-select: none;
 	padding: 3px;
 	opacity: 0.3;
 	position: absolute;
@@ -236,6 +237,10 @@ pre {
 	opacity: 0.3;
 }
 
+.taskbar .taskbar-score {
+	opacity: 1;
+}
+
 .taskbar .title {
 	font-size: 15px;
 	margin-right: 20px;
@@ -304,4 +309,12 @@ pre {
 
 .notification-message {
 	padding: 10px 15px;
+}
+
+.system-clock {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	color: white;
+	padding: 10px;
 }

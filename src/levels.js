@@ -1,4 +1,5 @@
 window.LEVELS = {};
+window.LEVEL_TIMES = {};
 
 // 98
 window.LEVELS[1] = `
@@ -9,6 +10,7 @@ int main() {
   cout << "Hello World!";
   return 0;
 }`;
+window.LEVEL_TIMES[1] = 60 * 1000;
 
 // 281
 window.LEVELS[2] = `
@@ -28,6 +30,7 @@ int main() {
   free(ptr);
   return 0;
 }`
+window.LEVEL_TIMES[2] = 75 * 1000;
 
 window.LEVELS[3] = `
 #include <map>
@@ -44,6 +47,7 @@ int fib(int n) {
   if (n < 2) return n;
   return memoize<fib>(n - 1) + memoize<fib>(n - 2);
 }`
+window.LEVEL_TIMES[3] = 90 * 1000;
 
 // 369
 window.LEVELS[3] = `
@@ -68,6 +72,7 @@ string someWordFunction(Node* head, int k) {
 <br>
   return ans;
 }`
+window.LEVEL_TIMES[3] = 100 * 1000;
 
 // 449
 window.LEVELS[4] = `
@@ -95,6 +100,7 @@ int main() {
   delete pt;
   return 0;
 }`
+window.LEVEL_TIMES[4] = 125 * 1000;
 
 // 472
 window.LEVELS[5] = `
@@ -110,3 +116,5 @@ void log(Event *event) {
   else
     std::cout << "Event" << std::endl;
 }`
+window.LEVEL_TIMES[5] = 150 * 1000;
+

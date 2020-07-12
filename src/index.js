@@ -1,3 +1,4 @@
+import moment from "moment"
 import React, { useState, useEffect, useRef } from "react";
 import { render } from "react-dom";
 import Draggable from 'react-draggable';
@@ -32,10 +33,11 @@ function Game() {
 	const [distractions, setDistractions] = useState({});
 	const [gameState, setGameState] = useState("MAIN_MENU");
     const [gameLevel, setGameLevel] = useState(1);
+    const [levelTime, setLevelTime] = useState(window.LEVEL_TIMES[gameLevel]);
 	const [distractionSpeed, setDistractionSpeed] = useState(3000);
 	const [score, setScore] = useState(0);
 
-     useInterval(() => {
+    useInterval(() => {
 		if (gameState === "PLAYING") {
 			const typeOfDistractions = ['NOTIFICATION', 'POPUP', 'UPDATE'];
 			const distractionType = typeOfDistractions[randomInt(0, typeOfDistractions.length)];
@@ -105,7 +107,7 @@ function Game() {
 				<span>Edit</span>
 				<span>View</span>
 				<span>Help</span>
-				<span>Score: {score}</span>
+				<span className="taskbar-score">Score: {score}</span>
 				<span className="taskbar-spacer" />
 				<button className="taskbar-button" onClick={() => {
 					if (gameState === "MAIN_MENU") {
@@ -208,6 +210,9 @@ function Game() {
 						);
 				}
 			})()}
+            <div className="system-clock">
+                {moment().format()}
+            </div>
 		</>
 	);
 }
@@ -278,7 +283,9 @@ function Terminal({ commandEntered, gameLevel, score, updateLevel, updateState, 
                     </ul>
                 </div>
     			<div className="editor-tab">
-                    <div className="shadow-text">
+                    <div className="shadow-text" onClick={() => {
+                        document.querySelector("textarea").focus();
+                    }}>
                         {program.split("\n").map((i,key) => {
                             if (i.trim() === "<br>") {
                                 return <br key={key}></br>;
@@ -340,6 +347,7 @@ function Terminal({ commandEntered, gameLevel, score, updateLevel, updateState, 
                     if (program.trim().replace(/<br>/g,'') === currentInput.trim()) {
                         // success
                         // setSaveState('success');
+                        updateScore(score + (gameLevel * 1000));
                         updateLevel(++gameLevel);
                         setCurrentInput("");
                         updateDistractions({});
