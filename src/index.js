@@ -26,6 +26,7 @@ import k11 from "./assets/keyboard/10.mp3";
 
 const popupSound = new Audio(sound_1);
 const bgMusic = new Audio(bg);
+bgMusic.loop = true;
 const key1 = new Audio(k1);
 const key2 = new Audio(k2);
 const key3 = new Audio(k3);
@@ -146,6 +147,8 @@ function Game() {
 								setGameState("MAIN_MENU");
 								setScore(0);
 								setDistractions({});
+								bgMusic.pause();
+								bgMusic.currentTime = 0;
 							}}
 						>
 							Quit
@@ -199,16 +202,18 @@ function Game() {
 								}}/>
 								{Object.entries(distractions).map(([id,  distraction]) => {
 									switch (distraction.type) {
-										case "POPUP":
+										case "POPUP": {
+											function handleClose() {
+												const { [id]: removed, ...rest } = distractions;
+												setDistractions(rest);
+												setScore(score + 10);
+											}
 											return (
-												<Window key={id} onClose={() => {
-													const { [id]: removed, ...rest } = distractions;
-													setDistractions(rest);
-													setScore(score + 10);
-												}} fileName={`${id.substring(0, 8)}.png`}>
-													<img src={distraction.image} width="300"/>
+												<Window key={id} onClose={handleClose} fileName={`${id.substring(0, 8)}.png`}>
+													<img src={distraction.image} width="300" onClick={handleClose}/>
 												</Window>
 											);
+										}
 										case "NOTIFICATION":
 											return (
 												<Notification key={id} onClose={() => {
