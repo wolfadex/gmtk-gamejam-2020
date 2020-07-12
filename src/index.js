@@ -230,6 +230,7 @@ function Game() {
 								<Terminal
 									key="terminal"
 									gameLevel={gameLevel}
+                                    distractions={distractions}
 									score={score}
 									updateLevel={setGameLevel}
 									updateState={setGameState}
@@ -319,7 +320,7 @@ function Game() {
 								<div className="tips-container">
                                     <div>TIPS</div>
                                     <div className="tip-items-container">
-                                        <div className="tip-item">You can adjust how often distractions come up in the settings.</div>
+                                        <div className="tip-item">The more distractions you have the higher your score.</div>
                                         <div className="tip-item">You can dismiss most distractions by clicking on them.</div>
                                         <div className="tip-item">You can move windows by dragging them.</div>
                                     </div>
@@ -440,7 +441,7 @@ function getDifference(a, b)
     return result;
 }
 
-function Terminal({ commandEntered, gameLevel, score, updateLevel, updateState, clearDistractions, updateScore }) {
+function Terminal({ commandEntered, gameLevel, score, updateLevel, updateState, clearDistractions, updateScore, distractions }) {
 	const [currentInput, setCurrentInput] = useState("");
 	const [previousInputs, setPreviousInputs] = useState([]);
     const [comboCount, setComboCount] = useState(0);
@@ -540,21 +541,23 @@ function Terminal({ commandEntered, gameLevel, score, updateLevel, updateState, 
                                     break;
                             }
 
+                            const disLen = Object.keys(distractions.things).length;
+
                             if (e.keyCode >= 48 && e.keyCode <= 57) {
                                 // 0-9
-                                updateScore(score + 10);
+                                updateScore(score + 10  + (10 * disLen));
                             } else if (e.keyCode === 32) {
                                 // backspace
-                                updateScore(score + 5);
+                                updateScore(score + 5 + (10 * disLen));
                             } else if (e.keyCode === 8) {
                                 // backspace
                                 updateScore(score - 10);
                             } else if (e.keyCode >= 65 && e.keyCode <= 90) {
                                 // a-z
-                                updateScore(score + 10);
+                                updateScore(score + 10  + (10 * disLen));
                             } else if (e.keyCode >= 175 && e.keyCode <= 225) {
                                 // other relevant characters
-                                updateScore(score + 25);
+                                updateScore(score + 25  + (10 * disLen));
                             }
 
                             // this tab code is broken if we want to do pointing, not sure why...
