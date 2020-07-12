@@ -179,7 +179,15 @@ function Game() {
 				</span>
 				<span>Edit</span>
 				<span>View</span>
-				<span>Help</span>
+				{(gameState === "MAIN_MENU" || gameState === "PLAYING") &&
+					<span onClick={() => {
+						if (gameState === "MAIN_MENU") {
+							setGameState("HELP_MAIN");
+						} else {
+							setGameState("HELP_PLAYING");
+						}
+					}}>Help</span>
+				}
 				{highScore == null ? null :
 					<span className="taskbar-score">High Score: {highScore}</span>
 				}
@@ -236,6 +244,7 @@ function Game() {
 												dispatch({ type: "DELETE", payload: id });
 												setScore(score + 10);
 											}
+											console.log("carl", distraction.image);
 											return (
 												<Window key={id} onClose={handleClose} fileName={`${distraction.fileName.substring(0, 8)}.png`}>
 													<img src={distraction.image} width="300" onClick={handleClose}/>
@@ -291,6 +300,21 @@ function Game() {
 									Distraction Interval:
 									<input type="range" value={distractionSpeed / 100} min={5} max={50} onChange={({ target: { value } }) => setDistractionSpeed(value * 100)} />
 								</label>
+							</Window>
+						);
+					case "HELP_MAIN":
+					case "HELP_PLAYING":
+						return (
+							<Window
+								onClose={() => {
+									if (gameState === "HELP_MAIN") {
+										setGameState("MAIN_MENU");
+									} else {
+										setGameState("PLAYING");
+									}
+								}}
+							>
+								HELP
 							</Window>
 						);
 					case "GAME_OVER":
