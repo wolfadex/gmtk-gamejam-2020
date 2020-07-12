@@ -67,6 +67,10 @@ body {
 	outline: none;
 }
 
+button:hover {
+	opacity: 0.9;
+}
+
 button.close {
 	background: red;
 }
@@ -311,10 +315,24 @@ pre {
 	padding: 10px 15px;
 }
 
+.game-version {
+	position: absolute;;
+	bottom: 0;
+	left: 0;
+	color: white;
+	padding: 10px;
+}
+
 .system-clock {
 	position: absolute;
 	bottom: 0;
 	right: 0;
 	color: white;
 	padding: 10px;
+}
+
+.game-name {
+	font-family: 'Anton', sans-serif;
+    font-size: 300px;
+    color: white;
 }

@@ -17,7 +17,7 @@ const popupSound = new Audio(sound_1);
 
 render(<Game />, document.getElementById("root"))
 
-const maxPopups = 50;
+const maxPopups = 20;
 const maxLevels = 5;
 
 // GAME STATES:
@@ -39,6 +39,18 @@ function Game() {
 
     useInterval(() => {
 		if (gameState === "PLAYING") {
+            if (Object.keys(distractions).length > (maxPopups + 10 * gameLevel)) {
+                setGameState('GAME_OVER');
+                return;
+            }
+
+            // have some kind of scaling, so if you stop dismissing popups theres a higher change it happens
+            const trigger = randomInt(0, 100) - (Object.keys(distractions).length);
+            console.log(trigger);
+            if (trigger > 5) {
+                return;
+            }
+
 			const typeOfDistractions = ['NOTIFICATION', 'POPUP', 'UPDATE'];
 			const distractionType = typeOfDistractions[randomInt(0, typeOfDistractions.length)];
 			switch(distractionType) {
@@ -75,7 +87,7 @@ function Game() {
 					break;
 			}
 		}
-	}, distractionSpeed);
+	}, distractionSpeed / 10);
 
 	return (
 		<>
@@ -123,16 +135,15 @@ function Game() {
 				switch(gameState) {
 					case "MAIN_MENU":
 						return (
-							<Window left={100} top={100}>
-								<div className="main-menu">
-									<button onClick={() => setGameState("PLAYING")}>
-										Start Game
-									</button>
-									<button onClick={() => setGameState("SETTINGS_MAIN")}>
-										Settings
-									</button>
-								</div>
-							</Window>
+							<div className="main-menu">
+                                <div className="game-name">CTRL</div>
+                                <button onClick={() => setGameState("PLAYING")}>
+									Start Game
+								</button>
+								<button onClick={() => setGameState("SETTINGS_MAIN")}>
+									Settings
+								</button>
+							</div>
 						);
                     // case "NEW_LEVEL":
                     //     return(<>);
@@ -210,6 +221,9 @@ function Game() {
 						);
 				}
 			})()}
+            <div className="game-version">
+                version 0.1
+            </div>
             <div className="system-clock">
                 {moment().format()}
             </div>
