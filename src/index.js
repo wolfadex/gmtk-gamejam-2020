@@ -11,9 +11,44 @@ import cat_3 from "./assets/cat_3.jpg";
 import cat_4 from "./assets/cat_4.jpg";
 import cat_5 from "./assets/cat_5.jpg";
 import sound_1 from "./assets/sound_1.wav";
+import k1 from "./assets/keyboard/1.mp3";
+import k2 from "./assets/keyboard/2.mp3";
+import k3 from "./assets/keyboard/3.mp3";
+import k4 from "./assets/keyboard/4.mp3";
+import k5 from "./assets/keyboard/5.mp3";
+import k6 from "./assets/keyboard/6.mp3";
+import k7 from "./assets/keyboard/7.mp3";
+import k8 from "./assets/keyboard/8.mp3";
+import k9 from "./assets/keyboard/9.mp3";
+import k10 from "./assets/keyboard/10.mp3";
+import k11 from "./assets/keyboard/10.mp3";
 
 const popupSound = new Audio(sound_1);
 
+const key1 = new Audio(k1);
+const key2 = new Audio(k2);
+const key3 = new Audio(k3);
+const key4 = new Audio(k4);
+const key5 = new Audio(k5);
+const key6 = new Audio(k6);
+const key7 = new Audio(k7);
+const key8 = new Audio(k8);
+const key9 = new Audio(k9);
+const key10 = new Audio(k10);
+const key11 = new Audio(k11);
+const keyboardSounds = [
+    key1,
+    key2,
+    key3,
+    key4,
+    key5,
+    key6,
+    key7,
+    key8,
+    key9,
+    key10,
+    key11,
+];
 
 render(<Game />, document.getElementById("root"))
 
@@ -47,7 +82,7 @@ function Game() {
             // have some kind of scaling, so if you stop dismissing popups theres a higher change it happens
             const trigger = randomInt(0, 100) - (Object.keys(distractions).length);
             console.log(trigger);
-            if (trigger > 5) {
+            if (trigger > 10) {
                 return;
             }
 
@@ -313,6 +348,9 @@ function Terminal({ commandEntered, gameLevel, score, updateLevel, updateState, 
                         autoFocus
                         onChange={({ target: { value } }) => setCurrentInput(value)}
                         onKeyDown={(e) => {
+                            const randomSound = keyboardSounds[Math.floor(Math.random() * keyboardSounds.length)];
+                            randomSound.play();
+
                             if (e.keyCode >= 48 && e.keyCode <= 57) {
                                 // 0-9
                                 updateScore(score + 10);
