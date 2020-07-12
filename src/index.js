@@ -11,6 +11,7 @@ import cat_3 from "./assets/cat_3.jpg";
 import cat_4 from "./assets/cat_4.jpg";
 import cat_5 from "./assets/cat_5.jpg";
 import sound_1 from "./assets/sound_1.wav";
+import bg from "./assets/arcade.mp3";
 import k1 from "./assets/keyboard/1.mp3";
 import k2 from "./assets/keyboard/2.mp3";
 import k3 from "./assets/keyboard/3.mp3";
@@ -24,7 +25,7 @@ import k10 from "./assets/keyboard/10.mp3";
 import k11 from "./assets/keyboard/10.mp3";
 
 const popupSound = new Audio(sound_1);
-
+const bgMusic = new Audio(bg);
 const key1 = new Audio(k1);
 const key2 = new Audio(k2);
 const key3 = new Audio(k3);
@@ -51,7 +52,6 @@ const keyboardSounds = [
 ];
 
 render(<Game />, document.getElementById("root"))
-
 const maxPopups = 20;
 const maxLevels = 5;
 
@@ -134,6 +134,7 @@ function Game() {
 						<span
 							onClick={() => {
 								setGameState("PLAYING");
+                                bgMusic.play();
 								setScore(0);
 								setDistractions({});
 							}}
@@ -171,8 +172,11 @@ function Game() {
 					case "MAIN_MENU":
 						return (
 							<div className="main-menu">
-                                <div className="game-name">CTRL</div>
-                                <button onClick={() => setGameState("PLAYING")}>
+                                <div className="game-name shake">CTRL</div>
+                                <button onClick={() => {
+                                    setGameState("PLAYING");
+                                    bgMusic.play();
+                                }}>
 									Start Game
 								</button>
 								<button onClick={() => setGameState("SETTINGS_MAIN")}>
@@ -312,7 +316,7 @@ function Terminal({ commandEntered, gameLevel, score, updateLevel, updateState, 
     const [program, setProgram] = useState(window.LEVELS[gameLevel]);
 
 	return (
-		<Window left={40} top={40} onClose={() => {}} fileName={'Project ' + gameLevel}>
+		<Window id="main-editor" left={40} top={40} onClose={() => {}} fileName={'Project ' + gameLevel}>
             <div className="editor-window">
 	            <div className="editor-folders">
                     <div className="editor-title">FOLDERS</div>
@@ -348,8 +352,37 @@ function Terminal({ commandEntered, gameLevel, score, updateLevel, updateState, 
                         autoFocus
                         onChange={({ target: { value } }) => setCurrentInput(value)}
                         onKeyDown={(e) => {
+                            // sound eff
                             const randomSound = keyboardSounds[Math.floor(Math.random() * keyboardSounds.length)];
                             randomSound.play();
+
+                            // some shakes
+                            // const editorDom = document.getElementById('main-editor');
+                            const originalTop = parseFloat(e.target.style.marginTop.replace('px', '')) || 0;
+                            const originalLeft = parseFloat(e.target.style.marginLeft.replace('px', '')) || 0;
+                            switch(originalTop) {
+                                case 0:
+                                    e.target.style.marginTop = '1px';
+                                    break;
+                                case 1:
+                                    e.target.style.marginTop = '-1px';
+                                    break;
+                                case -1:
+                                    e.target.style.marginTop = '0px';
+                                    break;
+                            }
+
+                            switch(originalLeft) {
+                                case 0:
+                                    e.target.style.marginLeft = '-1px';
+                                    break;
+                                case 1:
+                                    e.target.style.marginLeft = '1px';
+                                    break;
+                                case -1:
+                                    e.target.style.marginLeft = '0px';
+                                    break;
+                            }
 
                             if (e.keyCode >= 48 && e.keyCode <= 57) {
                                 // 0-9
@@ -424,7 +457,7 @@ function Terminal({ commandEntered, gameLevel, score, updateLevel, updateState, 
 	)
 }
 
-function Window({ left, top, children, onClose, fileName }) {
+function Window({ left, top, children, onClose, fileName, id }) {
 	const [position, setPosition] = useState({
 		left: left != null ? left : randomInt(10, window.innerWidth - 210),
 		top: top != null ? top : randomInt(20, window.innerHeight - 210)
@@ -433,7 +466,7 @@ function Window({ left, top, children, onClose, fileName }) {
 	// const [offset, setOffset] = useState({ x: 0, y: 0 });
 	const [maximized, setMaximized] = useState(false);
 	const content = (
-		<div
+		<div id={id}
 			style={{
 				left: maximized ? 0 : position.left,
 				top: maximized ? 32 : position.top,
