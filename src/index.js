@@ -16,10 +16,21 @@ const popupSound = new Audio(sound_1);
 render(<Game />, document.getElementById("root"))
 
 const maxPopups = 20;
+const maxLevels = 5;
 
+// GAME STATES:
+// MAIN_MENU: start of the game
+// NEW_LEVEL: you get notifications about how hard this level is, and how long you have, clicking accept starts the level
+// WORK_STARTED: timer starts here
+// WORK_COMPLETE: calculate monuse clicks, keystrokes, wpm, display point total
+// GAME_OVER: you failed, you dounce
+// SETTINGS_MAIN: settings menu but returns to main menu when closed
+// SETTINGS_PLAYING: pause screen, returns to game when closed
+// FINISHED: you won! high score page perhaps?!
 function Game() {
 	const [popups, setPopups] = useState({});
 	const [gameState, setGameState] = useState("MAIN_MENU");
+    const [gameLevel, setGameLevel] = useState(1);
 	const [distractionSpeed, setDistractionSpeed] = useState(3000);
 	const [score, setScore] = useState(0);
 
@@ -87,10 +98,12 @@ function Game() {
 								</div>
 							</Window>
 						);
+                    // case "NEW_LEVEL":
+                    //     return(<>);
 					case "PLAYING":
 						return (
 							<>
-								<Terminal commandEntered={(cmd) => {
+								<Terminal gameLevel={gameLevel} updateLevel={setGameLevel} updateState={setGameState} updatePopups={setPopups} commandEntered={(cmd) => {
 									// const index = popups.findIndex((word) => word === cmd);
 
 									// if (index > -1) {
@@ -177,19 +190,31 @@ function randomInt(min, max) {
   	return Math.floor(Math.random() * (max - min)) + min;
 }
 
-function Terminal({ commandEntered }) {
+//assuming "b" contains a subsequence containing
+//all of the letters in "a" in the same order
+function getDifference(a, b)
+{
+    var i = 0;
+    var j = 0;
+    var result = "";
+
+    while (j < b.length)
+    {
+        if (a[i] != b[j] || i == a.length)
+            result += b[j];
+        else
+            i++;
+        j++;
+    }
+    return result;
+}
+
+function Terminal({ commandEntered, gameLevel, updateLevel, updateState, updatePopups }) {
 	const [currentInput, setCurrentInput] = useState("");
 	const [previousInputs, setPreviousInputs] = useState([]);
     const [comboCount, setComboCount] = useState(0);
     const [saveState, setSaveState] = useState("");
-    const program = `// Your First C++ Program
-#include <iostream>
-using namespace std;
-<br>
-int main() {
-  cout << "Hello World!";
-  return 0;
-}`;
+    const [program, setProgram] = useState(window.LEVELS[gameLevel]);
 
 	return (
 		<Window left={40} top={40} onClose={() => {}}>
@@ -231,16 +256,30 @@ int main() {
 			</div>
             <div className="save-container">
                 <button className="save-button" onClick={() => {
-                    if (program.replace('<br>','') === currentInput.trim()) {
+                    console.log(program.trim().replace('<br>',''));
+                    console.log(currentInput.trim());
+                    if (program.trim().replace(/<br>/g,'') === currentInput.trim()) {
                         // success
                         setSaveState('success');
+                        updateLevel(++gameLevel);
+                        setCurrentInput("");
+                        updatePopups({});
+
+                        if (gameLevel > maxLevels) {
+                            updateState("FINISHED");
+                        } else {
+                            setProgram(window.LEVELS[gameLevel]);
+                        }
+                        console.log(gameLevel);
                         console.log('success');
                     } else {
                         // failed
+                        console.log(getDifference(program.trim().replace('<br>',''), currentInput.trim()))
                         setSaveState('failed');
                         console.log('failed');
                     }
                 }}>Save</button>
+                <div>{gameLevel}</div>
                 <div>{saveState}</div>
             </div>
 		</Window>
@@ -270,7 +309,7 @@ function Window({ left, top, children, onClose }) {
 				onMouseDown={(e) => {
 					e.preventDefault();
 					e.stopPropagation();
-					
+
 					if (!maximized) {
 						setOffset({ x: e.pageX - position.left, y: e.pageY - position.top });
 						setDragging(true);
