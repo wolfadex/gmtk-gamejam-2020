@@ -295,24 +295,36 @@ function Game() {
 						);
 					case "GAME_OVER":
 						return (
-							<Window onClose={() => setGameState("MAIN_MENU")}>
+							<Window onClose={() => {
+								setGameState("MAIN_MENU");
+								dispatch({ type: "RESET" });
+							}}>
 								<div className="game-over">
 									System Crashed, Game Over
 								</div>
 
-								<button onClick={() => setGameState("MAIN_MENU")}>
+								<button onClick={() => {
+									setGameState("MAIN_MENU");
+									dispatch({ type: "RESET" });
+								}}>
 									Reset
 								</button>
 							</Window>
 						);
 					case "FINISHED":
 						return (
-							<Window onClose={() => setGameState("MAIN_MENU")} left={10} top={42}>
+							<Window onClose={() => {
+								setGameState("MAIN_MENU");
+								dispatch({ type: "RESET" });
+							}} left={10} top={42}>
 								<div className="game-won">
 									You've Completed All The Work!
 								</div>
 
-								<button onClick={() => setGameState("MAIN_MENU")}>
+								<button onClick={() => {
+									setGameState("MAIN_MENU");
+									dispatch({ type: "RESET" });
+								}}>
 									Get More Work
 								</button>
 							</Window>
