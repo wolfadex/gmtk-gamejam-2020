@@ -152,13 +152,13 @@ function Terminal({ commandEntered }) {
 	const [currentInput, setCurrentInput] = useState("");
 	const [previousInputs, setPreviousInputs] = useState([]);
     const foo = `// Your First C++ Program
-                #include <iostream>
-                using namespace std;
-                <br>
-                int main() {
-                  cout << "Hello World!";
-                  return 0;
-                }`;
+#include <iostream>
+using namespace std;
+<br>
+int main() {
+  cout << "Hello World!";
+  return 0;
+}`;
 
 	return (
 		<Window left={40} top={40} onClose={() => {}}>
@@ -186,7 +186,7 @@ function Terminal({ commandEntered }) {
                             if (i.trim() === "<br>") {
                                 return <br key={key}></br>;
                             }
-                            return <div key={key}>{i.trim()}</div>;
+                            return <pre key={key}>{i}</pre>;
                         })}
                     </div>
                     <textarea

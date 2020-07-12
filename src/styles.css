@@ -140,6 +140,14 @@ button.minimize {
 	position: absolute;
 	z-index: 0;
 	line-height: 16px;
+	margin-left: -1px;
+    margin-top: -1px;
+}
+
+pre {
+	font-family: 'Inconsolata', monospace;
+	margin: 0;
+	padding: 0;
 }
 
 .taskbar {
@@ -151,6 +159,7 @@ button.minimize {
 	padding-right: 8px;
 	display: flex;
 	align-items: center;
+	font-family: 'Roboto Mono', monospace;
 }
 
 .taskbar-spacer {
