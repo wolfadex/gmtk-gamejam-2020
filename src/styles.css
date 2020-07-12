@@ -161,6 +161,7 @@ button {
     padding: 10px 20px;
     border-radius: 5px;
     margin-left: 10px;
+    cursor: pointer;
 }
 
 pre {
@@ -225,5 +226,18 @@ pre {
 
 .taskbar span:hover {
 	opacity: 1;
+	cursor: pointer;
 }
 
+.taskbar span:hover > .taskbar-menu {
+	display: flex;
+}
+
+.taskbar-menu {
+	display: none;
+	position: absolute;
+    transform: translateY(9px);
+    background: rgba(10, 10, 10, 0.8);
+    flex-direction: column;
+    z-index: 1;
+}

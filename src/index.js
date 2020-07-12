@@ -21,6 +21,7 @@ function Game() {
 	const [popups, setPopups] = useState({});
 	const [gameState, setGameState] = useState("MAIN_MENU");
 	const [distractionSpeed, setDistractionSpeed] = useState(3000);
+	const [score, setScore] = useState(0);
 
 	useInterval(() => {
 		if (gameState === "PLAYING") {
@@ -33,10 +34,33 @@ function Game() {
 		<>
 			<div className="taskbar">
 				<span className="title">MangoOS</span>
-				<span>File</span>
+				<span>
+					File
+					<div className="taskbar-menu">
+						<span
+							onClick={() => {
+								setGameState("PLAYING");
+								setScore(0);
+								setPopups({});
+							}}
+						>
+							New Game
+						</span>
+						<span
+							onClick={() => {
+								setGameState("MAIN_MENU");
+								setScore(0);
+								setPopups({});
+							}}
+						>
+							Quit
+						</span>
+					</div>
+				</span>
 				<span>Edit</span>
 				<span>View</span>
 				<span>Help</span>
+				<span>Score: {score}</span>
 				<span className="taskbar-spacer" />
 				<button className="taskbar-button" onClick={() => {
 					if (gameState === "MAIN_MENU") {
@@ -79,6 +103,7 @@ function Game() {
 										<Window key={id} onClose={() => {
 											const { [id]: removed, ...rest } = popups;
 											setPopups(rest);
+											setScore(score + 10);
 										}}>
 											<img src={image} height="200"/>
 										</Window>
@@ -229,10 +254,15 @@ function Window({ left, top, children, onClose }) {
 	});
 	const [isDragging, setDragging] = useState(false);
 	const [offset, setOffset] = useState({ x: 0, y: 0 });
+	const [maximized, setMaximized] = useState(false);
 
 	return (
 		<div
-			style={{ left: position.left, top: position.top }}
+			style={{
+				left: maximized ? 0 : position.left,
+				top: maximized ? 32 : position.top,
+				...(maximized ? { width: window.innerWidth, height: window.innerHeight - 32 } : {})
+			}}
 			className="faux-window"
 		>
 			<div
@@ -240,8 +270,11 @@ function Window({ left, top, children, onClose }) {
 				onMouseDown={(e) => {
 					e.preventDefault();
 					e.stopPropagation();
-					setOffset({ x: e.pageX - position.left, y: e.pageY - position.top });
-					setDragging(true);
+					
+					if (!maximized) {
+						setOffset({ x: e.pageX - position.left, y: e.pageY - position.top });
+						setDragging(true);
+					}
 				}}
 				onMouseUp={(e) => {
 					e.preventDefault();
@@ -263,7 +296,7 @@ function Window({ left, top, children, onClose }) {
 				}}
 			>
                 <button className="close" onClick={onClose}></button>
-				<button className="maximize"></button>
+				<button className="maximize" onClick={() => setMaximized(!maximized)}></button>
                 <button className="minimize"></button>
 			</div>
 
