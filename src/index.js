@@ -306,6 +306,8 @@ function Game() {
 					case "HELP_PLAYING":
 						return (
 							<Window
+                                left={100}
+                                top={100}
 								onClose={() => {
 									if (gameState === "HELP_MAIN") {
 										setGameState("MAIN_MENU");
@@ -314,16 +316,23 @@ function Game() {
 									}
 								}}
 							>
-								HELP
+								<div className="tips-container">
+                                    <div>TIPS</div>
+                                    <div className="tip-items-container">
+                                        <div className="tip-item">You can adjust how often distractions come up in the settings.</div>
+                                        <div className="tip-item">You can dismiss most distractions by clicking on them.</div>
+                                        <div className="tip-item">You can move windows by dragging them.</div>
+                                    </div>
+                                </div>
 							</Window>
 						);
 					case "GAME_OVER":
 						return (
 							<Window onClose={() => {
-								setGameState("MAIN_MENU");
+                                setGameState("MAIN_MENU");
                                 setScore(0);
 								dispatch({ type: "RESET" });
-							}} id="game-over">
+							}} left={100} top={100} id="game-over">
                                 <div className="game-won-container">
     								<div className="game-over">
     									YOU FAILED TO FINISH YOUR WORK!
@@ -355,7 +364,7 @@ function Game() {
 								setGameState("PLAYING");
                                 setScore(0);
 								dispatch({ type: "RESET" });
-							}} left={10} top={42} id="game-won">
+							}} left={100} top={100} id="game-won">
 								<div className="game-won-container">
                                     <div className="game-won">
     									You've completed all the work!

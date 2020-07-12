@@ -364,3 +364,15 @@ pre {
     margin-left: 0;
     margin-top: 20px;
 }
+
+.tips-container {
+	padding: 20px;
+	background: #444;
+    color: white;
+    font-size: 30px;
+}
+
+.tip-item {
+	font-size: 20px;
+	padding: 20px 0;
+}
