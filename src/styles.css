@@ -1,7 +1,9 @@
 html,
 body {
-	height: 100%;
+	height: 100vh;
+	widows: 100vw;
 	margin: 0;
+	overflow: hidden;
 	font-family: 'Inconsolata', monospace;
 }
 
@@ -37,7 +39,12 @@ body {
 	padding: 8px 0px 8px 5px;
 }
 
-.window-header > button {
+.window-control-header {
+	display: flex;
+	align-items: center;
+}
+
+.window-control-button-group > button {
 	float: left;
 	cursor: pointer;
 	border-radius: 10px;
@@ -46,11 +53,22 @@ body {
     border: none;
 }
 
+.window-control-filename {
+	flex-grow: 10;
+    text-align: center;
+    padding-right: 51px;
+    color: #999;
+}
+
 .terminal,
 .terminal:focused,
 .terminal:active {
 	border-width: 0;
 	outline: none;
+}
+
+button:hover {
+	opacity: 0.9;
 }
 
 button.close {
@@ -128,13 +146,18 @@ button.minimize {
     -moz-box-shadow: none;
     box-shadow: none;
 
-	width: 500px;
+	width: 650px;
 	height: 500px;
 	font-size: 16px;
 	font-family: 'Inconsolata', monospace;
+
+    -moz-tab-size : 2;
+  	-o-tab-size : 2;
+	tab-size : 2;
 }
 
 .shadow-text {
+	user-select: none;
 	padding: 3px;
 	opacity: 0.3;
 	position: absolute;
@@ -218,6 +241,10 @@ pre {
 	opacity: 0.3;
 }
 
+.taskbar .taskbar-score {
+	opacity: 1;
+}
+
 .taskbar .title {
 	font-size: 15px;
 	margin-right: 20px;
@@ -264,4 +291,48 @@ pre {
 
 .updating-title {
 	margin: 1rem 1rem 0 1rem;
+}
+
+.notification {
+	display: flex;
+    flex-direction: column;
+	width: 375px;
+    min-height: 90px;
+    background: white;
+    margin: 25px;
+    border-radius: 2px;
+    box-shadow: 3px 3px 3px 3px rgba(0, 0, 0, 0.25);
+    border: 1px solid gray;
+    z-index: 10;
+}
+
+.notification-author {
+	padding: 15px 15px 0;
+	font-weight: 600;
+}
+
+.notification-message {
+	padding: 10px 15px;
+}
+
+.game-version {
+	position: absolute;;
+	bottom: 0;
+	left: 0;
+	color: white;
+	padding: 10px;
+}
+
+.system-clock {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	color: white;
+	padding: 10px;
+}
+
+.game-name {
+	font-family: 'Anton', sans-serif;
+    font-size: 300px;
+    color: white;
 }

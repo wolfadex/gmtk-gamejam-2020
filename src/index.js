@@ -1,3 +1,4 @@
+import moment from "moment"
 import React, { useState, useEffect, useRef } from "react";
 import { render } from "react-dom";
 import Draggable from 'react-draggable';
@@ -10,12 +11,47 @@ import cat_3 from "./assets/cat_3.jpg";
 import cat_4 from "./assets/cat_4.jpg";
 import cat_5 from "./assets/cat_5.jpg";
 import sound_1 from "./assets/sound_1.wav";
+import bg from "./assets/arcade.mp3";
+import k1 from "./assets/keyboard/1.mp3";
+import k2 from "./assets/keyboard/2.mp3";
+import k3 from "./assets/keyboard/3.mp3";
+import k4 from "./assets/keyboard/4.mp3";
+import k5 from "./assets/keyboard/5.mp3";
+import k6 from "./assets/keyboard/6.mp3";
+import k7 from "./assets/keyboard/7.mp3";
+import k8 from "./assets/keyboard/8.mp3";
+import k9 from "./assets/keyboard/9.mp3";
+import k10 from "./assets/keyboard/10.mp3";
+import k11 from "./assets/keyboard/10.mp3";
 
 const popupSound = new Audio(sound_1);
-
+const bgMusic = new Audio(bg);
+const key1 = new Audio(k1);
+const key2 = new Audio(k2);
+const key3 = new Audio(k3);
+const key4 = new Audio(k4);
+const key5 = new Audio(k5);
+const key6 = new Audio(k6);
+const key7 = new Audio(k7);
+const key8 = new Audio(k8);
+const key9 = new Audio(k9);
+const key10 = new Audio(k10);
+const key11 = new Audio(k11);
+const keyboardSounds = [
+    key1,
+    key2,
+    key3,
+    key4,
+    key5,
+    key6,
+    key7,
+    key8,
+    key9,
+    key10,
+    key11,
+];
 
 render(<Game />, document.getElementById("root"))
-
 const maxPopups = 20;
 const maxLevels = 5;
 
@@ -32,14 +68,26 @@ function Game() {
 	const [distractions, setDistractions] = useState({});
 	const [gameState, setGameState] = useState("MAIN_MENU");
     const [gameLevel, setGameLevel] = useState(1);
+    const [levelTime, setLevelTime] = useState(window.LEVEL_TIMES[gameLevel]);
 	const [distractionSpeed, setDistractionSpeed] = useState(3000);
 	const [score, setScore] = useState(0);
 
-	useInterval(() => {
+    useInterval(() => {
 		if (gameState === "PLAYING") {
-			const typeOfDistractions = ["POPUP", "NOTIFICATION", "UPDATE"];
-			const distractionType = typeOfDistractions[randomInt(0, typeOfDistractions.length)];
+            if (Object.keys(distractions).length > (maxPopups + 10 * gameLevel)) {
+                setGameState('GAME_OVER');
+                return;
+            }
 
+            // have some kind of scaling, so if you stop dismissing popups theres a higher change it happens
+            const trigger = randomInt(0, 100) - (Object.keys(distractions).length);
+            console.log(trigger);
+            if (trigger > 10) {
+                return;
+            }
+
+			const typeOfDistractions = ['NOTIFICATION', 'POPUP', 'UPDATE'];
+			const distractionType = typeOfDistractions[randomInt(0, typeOfDistractions.length)];
 			switch(distractionType) {
 				case "POPUP":
 					setDistractions({
@@ -55,7 +103,8 @@ function Game() {
 					setDistractions({
 						...distractions,
 						[uuidv4()]: {
-							message: getNotification(),
+							author: "from " + getAuthor(),
+                            message: getNotification(),
 							type: distractionType,
 						}
 					});
@@ -73,7 +122,7 @@ function Game() {
 					break;
 			}
 		}
-	}, distractionSpeed);
+	}, distractionSpeed / 10);
 
 	return (
 		<>
@@ -85,6 +134,7 @@ function Game() {
 						<span
 							onClick={() => {
 								setGameState("PLAYING");
+                                bgMusic.play();
 								setScore(0);
 								setDistractions({});
 							}}
@@ -105,7 +155,7 @@ function Game() {
 				<span>Edit</span>
 				<span>View</span>
 				<span>Help</span>
-				<span>Score: {score}</span>
+				<span className="taskbar-score">Score: {score}</span>
 				<span className="taskbar-spacer" />
 				<button className="taskbar-button" onClick={() => {
 					if (gameState === "MAIN_MENU") {
@@ -121,23 +171,25 @@ function Game() {
 				switch(gameState) {
 					case "MAIN_MENU":
 						return (
-							<Window left={200} top={200}>
-								<div className="main-menu">
-									<button onClick={() => setGameState("PLAYING")}>
-										Start Game
-									</button>
-									<button  onClick={() => setGameState("SETTINGS_MAIN")}>
-										Settings
-									</button>
-								</div>
-							</Window>
+							<div className="main-menu">
+                                <div className="game-name shake">CTRL</div>
+                                <button onClick={() => {
+                                    setGameState("PLAYING");
+                                    bgMusic.play();
+                                }}>
+									Start Game
+								</button>
+								<button onClick={() => setGameState("SETTINGS_MAIN")}>
+									Settings
+								</button>
+							</div>
 						);
                     // case "NEW_LEVEL":
                     //     return(<>);
 					case "PLAYING":
 						return (
 							<>
-								<Terminal gameLevel={gameLevel} updateLevel={setGameLevel} updateState={setGameState} updatePopups={setPopups} commandEntered={(cmd) => {
+								<Terminal gameLevel={gameLevel} score={score} updateLevel={setGameLevel} updateState={setGameState} updateDistractions={setDistractions} updateScore={setScore} commandEntered={(cmd) => {
 									// const index = popups.findIndex((word) => word === cmd);
 
 									// if (index > -1) {
@@ -153,17 +205,20 @@ function Game() {
 													const { [id]: removed, ...rest } = distractions;
 													setDistractions(rest);
 													setScore(score + 10);
-												}}>
-													<img src={distraction.image} height="200"/>
+												}} fileName={`${id.substring(0, 8)}.png`}>
+													<img src={distraction.image} width="300"/>
 												</Window>
 											);
-										case "NOTIFICATION": 
+										case "NOTIFICATION":
 											return (
 												<Notification key={id} onClose={() => {
 													const { [id]: removed, ...rest } = distractions;
 													setDistractions(rest);
 												}}>
-													{distraction.message}
+                                                    <>
+                                                        <div className="notification-author">{distraction.author}</div>
+                                                        <div className="notification-message">{distraction.message}</div>
+                                                    </>
 												</Notification>
 											);
 										case "UPDATE":
@@ -187,6 +242,8 @@ function Game() {
 						return (
 							<Window
 								key="settings"
+                                left={100}
+                                top={100}
 								onClose={() => {
 									if (gameState === "SETTINGS_MAIN") {
 										setGameState("MAIN_MENU");
@@ -203,31 +260,15 @@ function Game() {
 						);
 				}
 			})()}
+            <div className="game-version">
+                version 0.1
+            </div>
+            <div className="system-clock">
+                {moment().format()}
+            </div>
 		</>
 	);
 }
-
-document.querySelector("textarea").addEventListener('keydown', function(e) {
-    if (e.keyCode === 9) { // tab was pressed
-        // get caret position/selection
-        var start = this.selectionStart;
-        var end = this.selectionEnd;
-
-        var target = e.target;
-        var value = target.value;
-
-        // set textarea value to: text before caret + tab + text after caret
-        target.value = value.substring(0, start)
-                    + "  "
-                    + value.substring(end);
-
-        // put caret at right position again (add one for the tab)
-        this.selectionStart = this.selectionEnd = start + 2;
-
-        // prevent the focus lose
-        e.preventDefault();
-    }
-}, false);
 
 function createPopup() {
   const words = [
@@ -267,7 +308,7 @@ function getDifference(a, b)
     return result;
 }
 
-function Terminal({ commandEntered, gameLevel, updateLevel, updateState, updatePopups }) {
+function Terminal({ commandEntered, gameLevel, score, updateLevel, updateState, updateDistractions, updateScore }) {
 	const [currentInput, setCurrentInput] = useState("");
 	const [previousInputs, setPreviousInputs] = useState([]);
     const [comboCount, setComboCount] = useState(0);
@@ -275,7 +316,7 @@ function Terminal({ commandEntered, gameLevel, updateLevel, updateState, updateP
     const [program, setProgram] = useState(window.LEVELS[gameLevel]);
 
 	return (
-		<Window left={40} top={40} onClose={() => {}}>
+		<Window id="main-editor" left={40} top={40} onClose={() => {}} fileName={'Project ' + gameLevel}>
             <div className="editor-window">
 	            <div className="editor-folders">
                     <div className="editor-title">FOLDERS</div>
@@ -283,7 +324,7 @@ function Terminal({ commandEntered, gameLevel, updateLevel, updateState, updateP
                         <li>.github</li>
                         <li>dist</li>
                         <li>src</li>
-                        <li className="highlighted">work.cp</li>
+                        <li className="highlighted">work.ccp</li>
                         <li>README.md</li>
                     </ul>
                 </div>
@@ -295,7 +336,9 @@ function Terminal({ commandEntered, gameLevel, updateLevel, updateState, updateP
                     </ul>
                 </div>
     			<div className="editor-tab">
-                    <div className="shadow-text">
+                    <div className="shadow-text" onClick={() => {
+                        document.querySelector("textarea").focus();
+                    }}>
                         {program.split("\n").map((i,key) => {
                             if (i.trim() === "<br>") {
                                 return <br key={key}></br>;
@@ -308,52 +351,146 @@ function Terminal({ commandEntered, gameLevel, updateLevel, updateState, updateP
                         className="editor"
                         autoFocus
                         onChange={({ target: { value } }) => setCurrentInput(value)}
+                        onKeyDown={(e) => {
+                            // sound eff
+                            const randomSound = keyboardSounds[Math.floor(Math.random() * keyboardSounds.length)];
+                            randomSound.play();
+
+                            // some shakes
+                            // const editorDom = document.getElementById('main-editor');
+                            const originalTop = parseFloat(e.target.style.marginTop.replace('px', '')) || 0;
+                            const originalLeft = parseFloat(e.target.style.marginLeft.replace('px', '')) || 0;
+                            switch(originalTop) {
+                                case 0:
+                                    if (randomInt(0, 2) === 1) {
+                                        e.target.style.marginTop = '0.5px';
+                                    } else {
+                                        e.target.style.marginTop = '-0.5px';
+                                    }
+                                    break;
+                                case 0.5:
+                                    if (randomInt(0, 2) === 1) {
+                                        e.target.style.marginTop = '0px';
+                                    } else {
+                                        e.target.style.marginTop = '-0.5px';
+                                    }
+                                    break;
+                                case -0.5:
+                                    if (randomInt(0, 2) === 1) {
+                                        e.target.style.marginTop = '0px';
+                                    } else {
+                                        e.target.style.marginTop = '0.5px';
+                                    }
+                                    break;
+                            }
+
+                            switch(originalLeft) {
+                                case 0:
+                                    if (randomInt(0, 2) === 1) {
+                                        e.target.style.marginLeft = '0.5px';
+                                    } else {
+                                        e.target.style.marginLeft = '-0.5px';
+                                    }
+                                    break;
+                                case 0.5:
+                                    if (randomInt(0, 2) === 1) {
+                                        e.target.style.marginLeft = '0px';
+                                    } else {
+                                        e.target.style.marginLeft = '-0.5px';
+                                    }
+                                    break;
+                                case -0.5:
+                                    if (randomInt(0, 2) === 1) {
+                                        e.target.style.marginLeft = '0px';
+                                    } else {
+                                        e.target.style.marginLeft = '0.5px';
+                                    }
+                                    break;
+                            }
+
+                            if (e.keyCode >= 48 && e.keyCode <= 57) {
+                                // 0-9
+                                updateScore(score + 10);
+                            } else if (e.keyCode === 32) {
+                                // backspace
+                                updateScore(score + 5);
+                            } else if (e.keyCode === 8) {
+                                // backspace
+                                updateScore(score - 10);
+                            } else if (e.keyCode >= 65 && e.keyCode <= 90) {
+                                // a-z
+                                updateScore(score + 10);
+                            } else if (e.keyCode >= 175 && e.keyCode <= 200) {
+                                // other relevant characters
+                                updateScore(score + 25);
+                            }
+
+                            // this tab code is broken if we want to do pointing, not sure why...
+                            // if (e.keyCode === 9) { // tab was pressed
+                            //     // get caret position/selection
+                            //     var target = e.target;
+                            //     var start = target.selectionStart;
+                            //     var end = target.selectionEnd;
+                            //     var value = target.value;
+
+                            //     // set textarea value to: text before caret + tab + text after caret
+                            //     target.value = value.substring(0, start)
+                            //                 + "  "
+                            //                 + value.substring(end);
+
+                            //     // put caret at right position again (add one for the tab)
+                            //     target.selectionStart = target.selectionEnd = start + 2;
+
+                            //     // prevent the focus lose
+                            //     e.preventDefault();
+                            // }
+                        }}
                         value={currentInput}
                     />
                 </div>
 			</div>
             <div className="save-container">
                 <button className="save-button" onClick={() => {
-                    console.log(program.trim().replace('<br>',''));
-                    console.log(currentInput.trim());
+                    // console.log(program.trim().replace('<br>',''));
+                    // console.log(currentInput.trim());
                     if (program.trim().replace(/<br>/g,'') === currentInput.trim()) {
                         // success
-                        setSaveState('success');
+                        // setSaveState('success');
+                        updateScore(score + (gameLevel * 1000));
                         updateLevel(++gameLevel);
                         setCurrentInput("");
-                        updatePopups({});
+                        updateDistractions({});
 
                         if (gameLevel > maxLevels) {
                             updateState("FINISHED");
                         } else {
                             setProgram(window.LEVELS[gameLevel]);
+                            setSaveState('');
                         }
                         console.log(gameLevel);
-                        console.log('success');
                     } else {
                         // failed
-                        console.log(getDifference(program.trim().replace('<br>',''), currentInput.trim()))
+                        // console.log(getDifference(program.trim().replace('<br>',''), currentInput.trim()))
                         setSaveState('failed');
                         console.log('failed');
                     }
                 }}>Save</button>
-                <div>{gameLevel}</div>
                 <div>{saveState}</div>
             </div>
 		</Window>
 	)
 }
 
-function Window({ left, top, children, onClose }) {
+function Window({ left, top, children, onClose, fileName, id }) {
 	const [position, setPosition] = useState({
 		left: left != null ? left : randomInt(10, window.innerWidth - 210),
-		top: top != null ? top : randomInt(42, window.innerHeight - 210)
+		top: top != null ? top : randomInt(20, window.innerHeight - 210)
 	});
 	const [isDragging, setDragging] = useState(false);
-	const [offset, setOffset] = useState({ x: 0, y: 0 });
+	// const [offset, setOffset] = useState({ x: 0, y: 0 });
 	const [maximized, setMaximized] = useState(false);
 	const content = (
-		<div
+		<div id={id}
 			style={{
 				left: maximized ? 0 : position.left,
 				top: maximized ? 32 : position.top,
@@ -361,11 +498,16 @@ function Window({ left, top, children, onClose }) {
 			}}
 			className="faux-window"
 		>
-			<div className="window-header">
-        <button className="close" onClick={onClose}></button>
-				<button className="maximize" onClick={() => setMaximized(!maximized)}></button>
-        <button className="minimize"></button>
-			</div>
+            <div className="window-header">
+                <div className="window-control-header">
+                    <div className="window-control-button-group">
+                        <button className="close" onClick={onClose}></button>
+                        <button className="maximize" onClick={() => setMaximized(!maximized)}></button>
+                        <button className="minimize"></button>
+                    </div>
+                    <div className="window-control-filename">{fileName}</div>
+                </div>
+             </div>
 			{children}
 		</div>
 	);
@@ -378,8 +520,8 @@ function Window({ left, top, children, onClose }) {
 		<Draggable
 	        handle=".window-header"
 	        defaultPosition={{
-	        	x: left != null ? left : randomInt(10, window.innerWidth - 210),
-				y: top != null ? top : randomInt(42, window.innerHeight - 210)
+	        	x: left != null ? left : 0,
+				y: top != null ? top : 0
 	        }}
 	        position={null}
        	>
@@ -422,10 +564,38 @@ function getPhoto() {
   	return photos[index]
 }
 
+function getAuthor() {
+    const authors = [
+        "Bossman",
+        "Bosswoman",
+        "Your best friend",
+        "Your worst enemy",
+        "Cool guy from accounting",
+        "Cool gal from accounting",
+        "Drinks too much coffee",
+        "Keeper of secrets",
+        "Hideo Kojima",
+        "Sid Meier",
+        "Gabe Newell",
+        "Assitant (to the) engineering manager",
+        "Office hipster",
+    ];
+
+    return authors[randomInt(0, authors.length)];
+}
+
 function getNotification() {
-	const notifications = [
-		"Get back to work! - Boss",
-		"Got any extra RAM? - Charles",
+    const notifications = [
+		"Shouldn't you be working?",
+        "Get back to work!",
+		"Got any extra RAM?",
+        "Did you get your tickets yet?",
+        "A C++, a Java, and a Ruby developer walks into a bar...",
+        "Argh, the burrito bar upstairs is on fire again",
+        "Do you have the latest TPS report?",
+        "Did you see the memo about the latest build?",
+        "Still on for that game tomorrow?",
+        "You must construct additional pylons",
 	];
 	return notifications[randomInt(0, notifications.length)];
 }
@@ -439,11 +609,18 @@ function Notification({ children }) {
 }
 
 function getUpdatingTitle() {
-	const updateNames = [
-		"Email",
-		"Browser",
+    const version = `${randomInt(0, 1000)}.${randomInt(0, 1000)}`;
+    const updateNames = [
+		"Legacy Email Client [2/100]",
+		"Client Browser Interfaces",
+        "User Visual Virtual Interfaces",
+        "Upstream Downstream Dependencies",
+        "Company External Great Firewalls",
+        "Super Secret Security System",
+        "Spyware",
+        "Compiling Central Core Computers",
 	];
-	return updateNames[randomInt(0, updateNames.length)];
+	return `${updateNames[randomInt(0, updateNames.length)]} to v${version}`;
 }
 
 function Update({ onClose, title }) {
