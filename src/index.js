@@ -37,7 +37,7 @@ function Game() {
 
      useInterval(() => {
 		if (gameState === "PLAYING") {
-			const typeOfDistractions = ["POPUP"];
+			const typeOfDistractions = ['NOTIFICATION', 'POPUP', 'UPDATE'];
 			const distractionType = typeOfDistractions[randomInt(0, typeOfDistractions.length)];
 			switch(distractionType) {
 				case "POPUP":
@@ -54,7 +54,8 @@ function Game() {
 					setDistractions({
 						...distractions,
 						[uuidv4()]: {
-							message: getNotification(),
+							author: "from " + getAuthor(),
+                            message: getNotification(),
 							type: distractionType,
 						}
 					});
@@ -152,7 +153,7 @@ function Game() {
 													const { [id]: removed, ...rest } = distractions;
 													setDistractions(rest);
 													setScore(score + 10);
-												}} fileName={`${id.substring(0, 3)}.png`}>
+												}} fileName={`${id.substring(0, 8)}.png`}>
 													<img src={distraction.image} width="300"/>
 												</Window>
 											);
@@ -162,7 +163,10 @@ function Game() {
 													const { [id]: removed, ...rest } = distractions;
 													setDistractions(rest);
 												}}>
-													{distraction.message}
+                                                    <>
+                                                        <div className="notification-author">{distraction.author}</div>
+                                                        <div className="notification-message">{distraction.message}</div>
+                                                    </>
 												</Notification>
 											);
 										case "UPDATE":
@@ -288,24 +292,42 @@ function Terminal({ commandEntered, gameLevel, score, updateLevel, updateState, 
                         autoFocus
                         onChange={({ target: { value } }) => setCurrentInput(value)}
                         onKeyDown={(e) => {
-                            if (e.keyCode === 9) { // tab was pressed
-                                // get caret position/selection
-                                var target = e.target;
-                                var start = target.selectionStart;
-                                var end = target.selectionEnd;
-                                var value = target.value;
-
-                                // set textarea value to: text before caret + tab + text after caret
-                                target.value = value.substring(0, start)
-                                            + "  "
-                                            + value.substring(end);
-
-                                // put caret at right position again (add one for the tab)
-                                target.selectionStart = target.selectionEnd = start + 2;
-
-                                // prevent the focus lose
-                                e.preventDefault();
+                            if (e.keyCode >= 48 && e.keyCode <= 57) {
+                                // 0-9
+                                updateScore(score + 10);
+                            } else if (e.keyCode === 32) {
+                                // backspace
+                                updateScore(score + 5);
+                            } else if (e.keyCode === 8) {
+                                // backspace
+                                updateScore(score - 10);
+                            } else if (e.keyCode >= 65 && e.keyCode <= 90) {
+                                // a-z
+                                updateScore(score + 10);
+                            } else if (e.keyCode >= 175 && e.keyCode <= 200) {
+                                // other relevant characters
+                                updateScore(score + 25);
                             }
+
+                            // this tab code is broken if we want to do pointing, not sure why...
+                            // if (e.keyCode === 9) { // tab was pressed
+                            //     // get caret position/selection
+                            //     var target = e.target;
+                            //     var start = target.selectionStart;
+                            //     var end = target.selectionEnd;
+                            //     var value = target.value;
+
+                            //     // set textarea value to: text before caret + tab + text after caret
+                            //     target.value = value.substring(0, start)
+                            //                 + "  "
+                            //                 + value.substring(end);
+
+                            //     // put caret at right position again (add one for the tab)
+                            //     target.selectionStart = target.selectionEnd = start + 2;
+
+                            //     // prevent the focus lose
+                            //     e.preventDefault();
+                            // }
                         }}
                         value={currentInput}
                     />
@@ -425,10 +447,38 @@ function getPhoto() {
   	return photos[index]
 }
 
+function getAuthor() {
+    const authors = [
+        "Bossman",
+        "Bosswoman",
+        "Your best friend",
+        "Your worst enemy",
+        "Cool guy from accounting",
+        "Cool gal from accounting",
+        "Drinks too much coffee",
+        "Keeper of secrets",
+        "Hideo Kojima",
+        "Sid Meier",
+        "Gabe Newell",
+        "Assitant (to the) engineering manager",
+        "Office hipster",
+    ];
+
+    return authors[randomInt(0, authors.length)];
+}
+
 function getNotification() {
-	const notifications = [
-		"Get back to work! - Boss",
-		"Got any extra RAM? - Charles",
+    const notifications = [
+		"Shouldn't you be working?",
+        "Get back to work!",
+		"Got any extra RAM?",
+        "Did you get your tickets yet?",
+        "A C++, a Java, and a Ruby developer walks into a bar...",
+        "Argh, the burrito bar upstairs is on fire again",
+        "Do you have the latest TPS report?",
+        "Did you see the memo about the latest build?",
+        "Still on for that game tomorrow?",
+        "You must construct additional pylons",
 	];
 	return notifications[randomInt(0, notifications.length)];
 }
@@ -442,15 +492,18 @@ function Notification({ children }) {
 }
 
 function getUpdatingTitle() {
-	const version = `${randomInt(0, 1000)}.${randomInt(0, 1000)}`;
+    const version = `${randomInt(0, 1000)}.${randomInt(0, 1000)}`;
     const updateNames = [
-		"Legacy Email Client",
+		"Legacy Email Client [2/100]",
 		"Client Browser Interfaces",
-        "User Visual Interfaces",
+        "User Visual Virtual Interfaces",
         "Upstream Downstream Dependencies",
         "Company External Great Firewalls",
+        "Super Secret Security System",
+        "Spyware",
+        "Compiling Central Core Computers",
 	];
-	return `${updateNames[randomInt(0, updateNames.length)]}_${version}`;
+	return `${updateNames[randomInt(0, updateNames.length)]} to v${version}`;
 }
 
 function Update({ onClose, title }) {
