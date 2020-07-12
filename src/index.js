@@ -23,9 +23,11 @@ import k8 from "./assets/keyboard/8.mp3";
 import k9 from "./assets/keyboard/9.mp3";
 import k10 from "./assets/keyboard/10.mp3";
 import k11 from "./assets/keyboard/10.mp3";
+import punch from "./assets/punch.mp3";
 
 const popupSound = new Audio(sound_1);
 const bgMusic = new Audio(bg);
+const punchSfx = new Audio(punch);
 bgMusic.loop = true;
 const key1 = new Audio(k1);
 const key2 = new Audio(k2);
@@ -53,7 +55,7 @@ const keyboardSounds = [
 ];
 
 render(<Game />, document.getElementById("root"))
-const maxPopups = 20;
+const maxPopups = 10;
 const maxLevels = 5;
 let highScore = localStorage.getItem("ceddy-wolfadex_gmtk2020_highscore");
 
@@ -94,7 +96,7 @@ function Game() {
 
     useInterval(() => {
 		if (gameState === "PLAYING") {
-            if (Object.keys(distractions.things).length > (maxPopups + 10 * gameLevel)) {
+            if (Object.keys(distractions.things).length > (maxPopups + 5 * gameLevel)) {
                 setGameState('GAME_OVER');
                 return;
             }
@@ -321,36 +323,64 @@ function Game() {
 						return (
 							<Window onClose={() => {
 								setGameState("MAIN_MENU");
+                                setScore(0);
 								dispatch({ type: "RESET" });
-							}}>
-								<div className="game-over">
-									System Crashed, Game Over
-								</div>
+							}} id="game-over">
+                                <div className="game-won-container">
+    								<div className="game-over">
+    									YOU FAILED TO FINISH YOUR WORK!
+    								</div>
 
-								<button onClick={() => {
-									setGameState("MAIN_MENU");
-									dispatch({ type: "RESET" });
-								}}>
-									Reset
-								</button>
+                                    <div className="game-score">
+                                        Your score: {score}
+                                    </div>
+
+                                    {highScore == null ? null :
+                                        <div className="game-highscore">
+                                            High Score: {highScore}
+                                        </div>
+                                    }
+
+    								<button className="game-reset-button" onClick={() => {
+    									setGameState("MAIN_MENU");
+                                        setScore(0);
+    									dispatch({ type: "RESET" });
+    								}}>
+    									I JUST NEED ANOTHER DAY OR TWO!
+    								</button>
+                                </div>
 							</Window>
 						);
 					case "FINISHED":
 						return (
 							<Window onClose={() => {
-								setGameState("MAIN_MENU");
+								setGameState("PLAYING");
+                                setScore(0);
 								dispatch({ type: "RESET" });
-							}} left={10} top={42}>
-								<div className="game-won">
-									You've Completed All The Work!
-								</div>
+							}} left={10} top={42} id="game-won">
+								<div className="game-won-container">
+                                    <div className="game-won">
+    									You've completed all the work!
+    								</div>
 
-								<button onClick={() => {
-									setGameState("MAIN_MENU");
-									dispatch({ type: "RESET" });
-								}}>
-									Get More Work
-								</button>
+                                    <div className="game-score">
+                                        Your score: {score}
+                                    </div>
+
+                                    {highScore == null ? null :
+                                        <div className="game-highscore">
+                                            High Score: {highScore}
+                                        </div>
+                                    }
+
+    								<button className="game-won-button" onClick={() => {
+    									setGameState("PLAYING");
+                                        setScore(0);
+    									dispatch({ type: "RESET" });
+    								}}>
+    									I want MORE WORK!
+    								</button>
+                                </div>
 							</Window>
 						);
 				}
@@ -450,6 +480,7 @@ function Terminal({ commandEntered, gameLevel, score, updateLevel, updateState, 
                             // sound eff
                             const randomSound = keyboardSounds[Math.floor(Math.random() * keyboardSounds.length)];
                             randomSound.play();
+                            // punchSfx.play();
 
                             // some shakes
                             // const editorDom = document.getElementById('main-editor');
@@ -515,7 +546,7 @@ function Terminal({ commandEntered, gameLevel, score, updateLevel, updateState, 
                             } else if (e.keyCode >= 65 && e.keyCode <= 90) {
                                 // a-z
                                 updateScore(score + 10);
-                            } else if (e.keyCode >= 175 && e.keyCode <= 200) {
+                            } else if (e.keyCode >= 175 && e.keyCode <= 225) {
                                 // other relevant characters
                                 updateScore(score + 25);
                             }
@@ -551,7 +582,7 @@ function Terminal({ commandEntered, gameLevel, score, updateLevel, updateState, 
                     if (program.trim().replace(/<br>/g,'') === currentInput.trim()) {
                         // success
                         // setSaveState('success');
-                        updateScore(score + (gameLevel * 1000));
+                        updateScore(score + (gameLevel * 250));
                         updateLevel(++gameLevel);
                         setCurrentInput("");
                         clearDistractions();
