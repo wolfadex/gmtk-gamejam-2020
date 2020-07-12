@@ -67,27 +67,24 @@ let highScore = localStorage.getItem("ceddy-wolfadex_gmtk2020_highscore");
 // SETTINGS_PLAYING: pause screen, returns to game when closed
 // FINISHED: you won! high score page perhaps?!
 function Game() {
-	const [nextId, setNextId] = useState(0);
 	const [distractions, dispatch] = useReducer(
 		(state, action) => {
 			switch(action.type) {
 				case "ADD": {
-					const id = nextId;
-					setNextId(id + 1);
-					return { ...state, [id]: action.payload };
+					return { ...state, things: { ...state.things, [state.nextId]: action.payload }, nextId: state.nextId + 1 };
 				}
 				case "RESET":
-					return {};
+					return { nextId: 0, things: {} };
 				case "DELETE": {
-					const { [action.payload]: removed, ...rest } = state;
-					return rest;
+					const { [action.payload]: removed, ...rest } = state.things;
+					return { ...state, things: rest };
 				}
 				default:
 					return state;
 
 			}
 		},
-		{}
+		{ nextId: 0, things: {} }
 	);
 	const [gameState, setGameState] = useState("MAIN_MENU");
     const [gameLevel, setGameLevel] = useState(1);
@@ -97,7 +94,7 @@ function Game() {
 
     useInterval(() => {
 		if (gameState === "PLAYING") {
-            if (Object.keys(distractions).length > (maxPopups + 10 * gameLevel)) {
+            if (Object.keys(distractions.things).length > (maxPopups + 10 * gameLevel)) {
                 setGameState('GAME_OVER');
                 return;
             }
@@ -145,7 +142,6 @@ function Game() {
 					popupSound.play();
 					break;
 			}
-			setNextId(nextId + 1);
 		}
 	}, distractionSpeed);
 
@@ -158,12 +154,11 @@ function Game() {
 					<div className="taskbar-menu">
 						<span
 							onClick={() => {
-								setGameState("PLAYING");
                                 bgMusic.play();
 								setScore(0);
 								dispatch({ type: "RESET" });
-								setNextId(0);
 								setGameLevel(1);
+								setGameState("PLAYING");
 							}}
 						>
 							New Game
@@ -173,7 +168,6 @@ function Game() {
 								setGameState("MAIN_MENU");
 								setScore(0);
 								dispatch({ type: "RESET" });
-								setNextId(0);
 								setGameLevel(1);
 								bgMusic.pause();
 								bgMusic.currentTime = 0;
@@ -191,15 +185,17 @@ function Game() {
 				}
 				<span className="taskbar-score">Score: {score}</span>
 				<span className="taskbar-spacer" />
-				<button className="taskbar-button" onClick={() => {
-					if (gameState === "MAIN_MENU") {
-						setGameState("SETTINGS_MAIN");
-					} else {
-						setGameState("SETTINGS_PLAYING");
-					}
-				}}>
-					<i className="fa fa-cog" aria-hidden="true"></i>
-				</button>
+				{(gameState === "MAIN_MENU" || gameState === "PLAYING") &&
+					<button className="taskbar-button" onClick={() => {
+						if (gameState === "MAIN_MENU") {
+							setGameState("SETTINGS_MAIN");
+						} else {
+							setGameState("SETTINGS_PLAYING");
+						}
+					}}>
+						<i className="fa fa-cog" aria-hidden="true"></i>
+					</button>
+				}
 			</div>
 			{(function() {
 				switch(gameState) {
@@ -233,7 +229,7 @@ function Game() {
 									updateScore={setScore}
 									commandEntered={(cmd) => {}}
 								/>
-								{Object.entries(distractions).map(([id,  distraction]) => {
+								{Object.entries(distractions.things).map(([id,  distraction]) => {
 									switch (distraction.type) {
 										case "POPUP": {
 											function handleClose() {
@@ -299,15 +295,27 @@ function Game() {
 						);
 					case "GAME_OVER":
 						return (
-							<div className="game-over">
-								Game Over
-							</div>
+							<Window onClose={() => setGameState("MAIN_MENU")}>
+								<div className="game-over">
+									System Crashed, Game Over
+								</div>
+
+								<button onClick={() => setGameState("MAIN_MENU")}>
+									Reset
+								</button>
+							</Window>
 						);
 					case "FINISHED":
 						return (
-							<div className="game-won">
-								You've Completed All The Work!
-							</div>
+							<Window onClose={() => setGameState("MAIN_MENU")} left={10} top={42}>
+								<div className="game-won">
+									You've Completed All The Work!
+								</div>
+
+								<button onClick={() => setGameState("MAIN_MENU")}>
+									Get More Work
+								</button>
+							</Window>
 						);
 				}
 			})()}

@@ -266,7 +266,7 @@ pre {
     transform: translateY(9px);
     background: rgba(10, 10, 10, 0.8);
     flex-direction: column;
-    z-index: 1;
+    z-index: 100;
 }
 
 .update {
@@ -294,7 +294,7 @@ pre {
 }
 
 .notification {
-	position: absolute;
+	position: relative;
 	display: flex;
     flex-direction: column;
 	width: 375px;
@@ -339,18 +339,10 @@ pre {
 }
 
 .game-over {
-	position: absolute;
-	left: 50%;
-	top: 50%;
-	transform: translate(-50%, -50%);
-	font-size: 50vh;
+	font-size: 12.5vh;
 	color: red;
 }
 
 .game-won {
-	position: absolute;
-	left: 50%;
-	top: 50%;
-	transform: translate(-50%, -50%);
-	font-size: 25vh;
+	font-size: 12.5vh;
 }
