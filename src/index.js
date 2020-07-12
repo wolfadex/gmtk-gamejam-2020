@@ -24,15 +24,15 @@ function Game() {
 
 	useInterval(() => {
 		if (gameState === "PLAYING") {
-			setPopups({...popups, [uuidv4()]: getPhoto() });
-			popupSound.play();
+			// setPopups({...popups, [uuidv4()]: getPhoto() });
+			// popupSound.play();
 		}
 	}, distractionSpeed);
 
 	return (
 		<>
 			<div className="taskbar">
-				<span className="title">BananoS</span>
+				<span className="title">MangoOS</span>
 				<span>File</span>
 				<span>Edit</span>
 				<span>View</span>
@@ -175,7 +175,7 @@ int main() {
                         <li>.github</li>
                         <li>dist</li>
                         <li>src</li>
-                        <li className="highlighted">work.cpp</li>
+                        <li className="highlighted">work.cp</li>
                         <li>README.md</li>
                     </ul>
                 </div>
@@ -205,7 +205,6 @@ int main() {
                 </div>
 			</div>
             <div className="save-container">
-                <div>{saveState}</div>
                 <button className="save-button" onClick={() => {
                     if (program.replace('<br>','') === currentInput.trim()) {
                         // success
@@ -217,6 +216,7 @@ int main() {
                         console.log('failed');
                     }
                 }}>Save</button>
+                <div>{saveState}</div>
             </div>
 		</Window>
 	)

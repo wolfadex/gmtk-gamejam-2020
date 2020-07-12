@@ -145,10 +145,22 @@ button.minimize {
 }
 
 .save-container {
-
+	display: flex;
+	justify-content: space-between;
+	padding: 20px;
+	position: absolute;
+	bottom: 0;
+	width: 94%;
+	align-items: center;
 }
 
-.save-button {
+button {
+	background: #666;
+	font-family: 'Inconsolata', monospace;
+	color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    margin-left: 10px;
 }
 
 pre {
