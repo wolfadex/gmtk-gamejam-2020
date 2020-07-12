@@ -1,5 +1,5 @@
 import moment from "moment"
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useReducer } from "react";
 import { render } from "react-dom";
 import Draggable from 'react-draggable';
 import dog_1 from "./assets/dog_1.jpg";
@@ -66,7 +66,28 @@ const maxLevels = 5;
 // SETTINGS_PLAYING: pause screen, returns to game when closed
 // FINISHED: you won! high score page perhaps?!
 function Game() {
-	const [distractions, setDistractions] = useState({});
+	const [nextId, setNextId] = useState(0);
+	const [distractions, dispatch] = useReducer(
+		(state, action) => {
+			switch(action.type) {
+				case "ADD": {
+					const id = nextId;
+					setNextId(id + 1);
+					return { ...state, [id]: action.payload };
+				}
+				case "RESET":
+					return {};
+				case "DELETE": {
+					const { [action.payload]: removed, ...rest } = state;
+					return rest;
+				}
+				default:
+					return state;
+
+			}
+		},
+		{}
+	);
 	const [gameState, setGameState] = useState("MAIN_MENU");
     const [gameLevel, setGameLevel] = useState(1);
     const [levelTime, setLevelTime] = useState(window.LEVEL_TIMES[gameLevel]);
@@ -81,40 +102,41 @@ function Game() {
             }
 
             // have some kind of scaling, so if you stop dismissing popups theres a higher change it happens
-            const trigger = randomInt(0, 100) - (Object.keys(distractions).length);
-            console.log(trigger);
-            if (trigger > 10) {
-                return;
-            }
+            // const trigger = randomInt(0, 100) - (Object.keys(distractions).length);
+            // console.log(trigger);
+            // if (trigger > 10) {
+            //     return;
+            // }
 
 			const typeOfDistractions = ['NOTIFICATION', 'POPUP', 'UPDATE'];
 			const distractionType = typeOfDistractions[randomInt(0, typeOfDistractions.length)];
 			switch(distractionType) {
 				case "POPUP":
-					setDistractions({
-						...distractions,
-						[uuidv4()]: {
+					dispatch({
+						type: "ADD",
+						payload: {
 							image: getPhoto(),
 							type: distractionType,
+							fileName: uuidv4(),
 						}
 					});
 					popupSound.play();
 					break;
 				case "NOTIFICATION":
-					setDistractions({
-						...distractions,
-						[uuidv4()]: {
+					dispatch({
+						type: "ADD",
+						payload: {
 							author: "from " + getAuthor(),
-                            message: getNotification(),
+							message: getNotification(),
 							type: distractionType,
 						}
 					});
 					popupSound.play();
 					break;
 				case "UPDATE":
-					setDistractions({
-						...distractions,
-						[uuidv4()]: {
+					dispatch({
+						type: "ADD",
+						payload: {
 							title: getUpdatingTitle(),
 							type: distractionType,
 						}
@@ -122,8 +144,9 @@ function Game() {
 					popupSound.play();
 					break;
 			}
+			setNextId(nextId + 1);
 		}
-	}, distractionSpeed / 10);
+	}, distractionSpeed);
 
 	return (
 		<>
@@ -137,7 +160,8 @@ function Game() {
 								setGameState("PLAYING");
                                 bgMusic.play();
 								setScore(0);
-								setDistractions({});
+								dispatch({ type: "RESET" });
+								setNextId(0);
 							}}
 						>
 							New Game
@@ -146,7 +170,8 @@ function Game() {
 							onClick={() => {
 								setGameState("MAIN_MENU");
 								setScore(0);
-								setDistractions({});
+								dispatch({ type: "RESET" });
+								setNextId(0);
 								bgMusic.pause();
 								bgMusic.currentTime = 0;
 							}}
@@ -192,34 +217,37 @@ function Game() {
 					case "PLAYING":
 						return (
 							<>
-								<Terminal gameLevel={gameLevel} score={score} updateLevel={setGameLevel} updateState={setGameState} updateDistractions={setDistractions} updateScore={setScore} commandEntered={(cmd) => {
-									// const index = popups.findIndex((word) => word === cmd);
-
-									// if (index > -1) {
-									// 	distractions.splice(index, 1);
-									// 	setDistractions(distractions);
-									// }
-								}}/>
+								<Terminal
+									gameLevel={gameLevel}
+									score={score}
+									updateLevel={setGameLevel}
+									updateState={setGameState}
+									clearDistractions={() => dispatch({ type: "RESET" })}
+									updateScore={setScore}
+									commandEntered={(cmd) => {}}
+								/>
 								{Object.entries(distractions).map(([id,  distraction]) => {
 									switch (distraction.type) {
 										case "POPUP": {
 											function handleClose() {
-												const { [id]: removed, ...rest } = distractions;
-												setDistractions(rest);
+												dispatch({ type: "DELETE", payload: id });
 												setScore(score + 10);
 											}
 											return (
-												<Window key={id} onClose={handleClose} fileName={`${id.substring(0, 8)}.png`}>
+												<Window key={id} onClose={handleClose} fileName={`${distraction.fileName.substring(0, 8)}.png`}>
 													<img src={distraction.image} width="300" onClick={handleClose}/>
 												</Window>
 											);
 										}
 										case "NOTIFICATION":
 											return (
-												<Notification key={id} onClose={() => {
-													const { [id]: removed, ...rest } = distractions;
-													setDistractions(rest);
-												}}>
+												<Notification
+													key={id}
+													onClose={() => {
+														dispatch({ type: "DELETE", payload: id });
+														setScore(score + 3);
+													}}
+												>
                                                     <>
                                                         <div className="notification-author">{distraction.author}</div>
                                                         <div className="notification-message">{distraction.message}</div>
@@ -231,8 +259,7 @@ function Game() {
 												<Update
 													key={id}
 													onClose={() => {
-														const { [id]: removed, ...rest } = distractions;
-														setDistractions(rest);
+														dispatch({ type: "DELETE", payload: id });
 													}}
 												>
 													{distraction.title}
@@ -262,6 +289,12 @@ function Game() {
 									<input type="range" value={distractionSpeed / 100} min={5} max={50} onChange={({ target: { value } }) => setDistractionSpeed(value * 100)} />
 								</label>
 							</Window>
+						);
+					case "GAME_OVER":
+						return (
+							<div className="game-over">
+								Game Over
+							</div>
 						);
 				}
 			})()}
@@ -313,7 +346,7 @@ function getDifference(a, b)
     return result;
 }
 
-function Terminal({ commandEntered, gameLevel, score, updateLevel, updateState, updateDistractions, updateScore }) {
+function Terminal({ commandEntered, gameLevel, score, updateLevel, updateState, clearDistractions, updateScore }) {
 	const [currentInput, setCurrentInput] = useState("");
 	const [previousInputs, setPreviousInputs] = useState([]);
     const [comboCount, setComboCount] = useState(0);
@@ -464,7 +497,7 @@ function Terminal({ commandEntered, gameLevel, score, updateLevel, updateState, 
                         updateScore(score + (gameLevel * 1000));
                         updateLevel(++gameLevel);
                         setCurrentInput("");
-                        updateDistractions({});
+                        clearDistractions();
 
                         if (gameLevel > maxLevels) {
                             updateState("FINISHED");
@@ -605,9 +638,9 @@ function getNotification() {
 	return notifications[randomInt(0, notifications.length)];
 }
 
-function Notification({ children }) {
+function Notification({ children, onClose }) {
 	return (
-		<div className="notification">
+		<div className="notification" onClick={onClose}>
 			{children}
 		</div>
 	);
