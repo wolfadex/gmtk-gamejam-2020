@@ -283,7 +283,7 @@ function Terminal({ commandEntered, gameLevel, updateLevel, updateState, updateP
                         <li>.github</li>
                         <li>dist</li>
                         <li>src</li>
-                        <li className="highlighted">work.cp</li>
+                        <li className="highlighted">work.ccp</li>
                         <li>README.md</li>
                     </ul>
                 </div>
@@ -314,11 +314,11 @@ function Terminal({ commandEntered, gameLevel, updateLevel, updateState, updateP
 			</div>
             <div className="save-container">
                 <button className="save-button" onClick={() => {
-                    console.log(program.trim().replace('<br>',''));
-                    console.log(currentInput.trim());
+                    // console.log(program.trim().replace('<br>',''));
+                    // console.log(currentInput.trim());
                     if (program.trim().replace(/<br>/g,'') === currentInput.trim()) {
                         // success
-                        setSaveState('success');
+                        // setSaveState('success');
                         updateLevel(++gameLevel);
                         setCurrentInput("");
                         updatePopups({});
@@ -327,12 +327,12 @@ function Terminal({ commandEntered, gameLevel, updateLevel, updateState, updateP
                             updateState("FINISHED");
                         } else {
                             setProgram(window.LEVELS[gameLevel]);
+                            setSaveState('');
                         }
                         console.log(gameLevel);
-                        console.log('success');
                     } else {
                         // failed
-                        console.log(getDifference(program.trim().replace('<br>',''), currentInput.trim()))
+                        // console.log(getDifference(program.trim().replace('<br>',''), currentInput.trim()))
                         setSaveState('failed');
                         console.log('failed');
                     }
@@ -362,9 +362,9 @@ function Window({ left, top, children, onClose }) {
 			className="faux-window"
 		>
 			<div className="window-header">
-        <button className="close" onClick={onClose}></button>
+                <button className="close" onClick={onClose}></button>
 				<button className="maximize" onClick={() => setMaximized(!maximized)}></button>
-        <button className="minimize"></button>
+                <button className="minimize"></button>
 			</div>
 			{children}
 		</div>
