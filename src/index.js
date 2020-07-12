@@ -32,7 +32,11 @@ function Game() {
 	return (
 		<>
 			<div className="taskbar">
-				BananaoS
+				<span className="title">BananoS</span>
+				<span>File</span>
+				<span>Edit</span>
+				<span>View</span>
+				<span>Help</span>
 				<span className="taskbar-spacer" />
 				<button className="taskbar-button" onClick={() => {
 					if (gameState === "MAIN_MENU") {
