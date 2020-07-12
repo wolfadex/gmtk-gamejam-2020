@@ -154,11 +154,12 @@ function Game() {
 					<div className="taskbar-menu">
 						<span
 							onClick={() => {
-                                bgMusic.play();
+                                setGameState("MAIN_MENU");
 								setScore(0);
 								dispatch({ type: "RESET" });
 								setGameLevel(1);
-								setGameState("PLAYING");
+								bgMusic.pause();
+								bgMusic.currentTime = 0;
 							}}
 						>
 							New Game
