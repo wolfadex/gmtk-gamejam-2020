@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { render } from "react-dom";
+import Draggable from 'react-draggable';
 import dog_1 from "./assets/dog_1.jpg";
 import dog_2 from "./assets/dog_2.jpg";
 import dog_3 from "./assets/dog_3.jpg";
@@ -18,15 +19,48 @@ render(<Game />, document.getElementById("root"))
 const maxPopups = 20;
 
 function Game() {
-	const [popups, setPopups] = useState({});
+	const [distractions, setDistractions] = useState({});
 	const [gameState, setGameState] = useState("MAIN_MENU");
 	const [distractionSpeed, setDistractionSpeed] = useState(3000);
 	const [score, setScore] = useState(0);
 
 	useInterval(() => {
 		if (gameState === "PLAYING") {
-			setPopups({...popups, [uuidv4()]: getPhoto() });
-			popupSound.play();
+			const typeOfDistractions = ["POPUP", "NOTIFICATION", "UPDATE"];
+			const distractionType = typeOfDistractions[randomInt(0, typeOfDistractions.length)];
+
+			switch(distractionType) {
+				case "POPUP":
+					setDistractions({
+						...distractions,
+						[uuidv4()]: {
+							image: getPhoto(),
+							type: distractionType,
+						}
+					});
+					popupSound.play();
+					break;
+				case "NOTIFICATION":
+					setDistractions({
+						...distractions,
+						[uuidv4()]: {
+							message: getNotification(),
+							type: distractionType,
+						}
+					});
+					popupSound.play();
+					break;
+				case "UPDATE":
+					setDistractions({
+						...distractions,
+						[uuidv4()]: {
+							title: getUpdatingTitle(),
+							type: distractionType,
+						}
+					});
+					popupSound.play();
+					break;
+			}
 		}
 	}, distractionSpeed);
 
@@ -41,7 +75,7 @@ function Game() {
 							onClick={() => {
 								setGameState("PLAYING");
 								setScore(0);
-								setPopups({});
+								setDistractions({});
 							}}
 						>
 							New Game
@@ -50,7 +84,7 @@ function Game() {
 							onClick={() => {
 								setGameState("MAIN_MENU");
 								setScore(0);
-								setPopups({});
+								setDistractions({});
 							}}
 						>
 							Quit
@@ -91,23 +125,47 @@ function Game() {
 						return (
 							<>
 								<Terminal commandEntered={(cmd) => {
-									// const index = popups.findIndex((word) => word === cmd);
+									// const index = distractions.findIndex((word) => word === cmd);
 
 									// if (index > -1) {
-									// 	popups.splice(index, 1);
-									// 	setPopups(popups);
+									// 	distractions.splice(index, 1);
+									// 	setDistractions(distractions);
 									// }
 								}}/>
-								{Object.entries(popups).map(([id, image ]) => {
-									return (
-										<Window key={id} onClose={() => {
-											const { [id]: removed, ...rest } = popups;
-											setPopups(rest);
-											setScore(score + 10);
-										}}>
-											<img src={image} height="200"/>
-										</Window>
-									);
+								{Object.entries(distractions).map(([id,  distraction]) => {
+									switch (distraction.type) {
+										case "POPUP":
+											return (
+												<Window key={id} onClose={() => {
+													const { [id]: removed, ...rest } = distractions;
+													setDistractions(rest);
+													setScore(score + 10);
+												}}>
+													<img src={distraction.image} height="200"/>
+												</Window>
+											);
+										case "NOTIFICATION": 
+											return (
+												<Notification key={id} onClose={() => {
+													const { [id]: removed, ...rest } = distractions;
+													setDistractions(rest);
+												}}>
+													{distraction.message}
+												</Notification>
+											);
+										case "UPDATE":
+											return (
+												<Update
+													key={id}
+													onClose={() => {
+														const { [id]: removed, ...rest } = distractions;
+														setDistractions(rest);
+													}}
+												>
+													{distraction.title}
+												</Update>
+											);
+									}
 								})}
 							</>
 						);
@@ -255,8 +313,7 @@ function Window({ left, top, children, onClose }) {
 	const [isDragging, setDragging] = useState(false);
 	const [offset, setOffset] = useState({ x: 0, y: 0 });
 	const [maximized, setMaximized] = useState(false);
-
-	return (
+	const content = (
 		<div
 			style={{
 				left: maximized ? 0 : position.left,
@@ -265,36 +322,7 @@ function Window({ left, top, children, onClose }) {
 			}}
 			className="faux-window"
 		>
-			<div
-				className="window-header"
-				onMouseDown={(e) => {
-					e.preventDefault();
-					e.stopPropagation();
-					
-					if (!maximized) {
-						setOffset({ x: e.pageX - position.left, y: e.pageY - position.top });
-						setDragging(true);
-					}
-				}}
-				onMouseUp={(e) => {
-					e.preventDefault();
-					e.stopPropagation();
-					setDragging(false);
-				}}
-				onMouseOut={(e) => {
-					e.preventDefault();
-					e.stopPropagation();
-					setDragging(false);
-				}}
-				onMouseMove={(e) => {
-					if (isDragging) {
-						setPosition({
-							left: e.pageX - offset.x,
-							top: e.pageY - offset.y,
-						});
-					}
-				}}
-			>
+			<div className="window-header">
                 <button className="close" onClick={onClose}></button>
 				<button className="maximize" onClick={() => setMaximized(!maximized)}></button>
                 <button className="minimize"></button>
@@ -302,6 +330,23 @@ function Window({ left, top, children, onClose }) {
 
 			{children}
 		</div>
+	);
+
+	if (maximized) {
+		return content;
+	}
+
+	return (
+		<Draggable
+	        handle=".window-header"
+	        defaultPosition={{
+	        	x: left != null ? left : randomInt(10, window.innerWidth - 210),
+				y: top != null ? top : randomInt(42, window.innerHeight - 210)
+	        }}
+	        position={null}
+       	>
+			{content}
+		</Draggable>
 	);
 }
 
@@ -339,6 +384,44 @@ function getPhoto() {
   	return photos[index]
 }
 
+function getNotification() {
+	const notifications = [
+		"Get back to work! - Boss",
+		"Got any extra RAM? - Charles",
+	];
+	return notifications[randomInt(0, notifications.length)];
+}
 
+function Notification({ children }) {
+	return (
+		<div className="notification">
+			{children}
+		</div>
+	);
+}
 
-// <div>Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+function getUpdatingTitle() {
+	const updateNames = [
+		"Email",
+		"Browser",
+	];
+	return updateNames[randomInt(0, updateNames.length)];
+}
+
+function Update({ onClose, title }) {
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			onClose();
+		}, 6000);
+		return () => clearTimeout(timer);
+	}, []);
+
+	return (
+		<Window onClick={() => {}}>
+			<span className="updating-title">Updating {title}...</span>
+			<div className="update">
+				<div></div>
+			</div>
+		</Window>
+	);
+}

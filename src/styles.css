@@ -241,3 +241,27 @@ pre {
     flex-direction: column;
     z-index: 1;
 }
+
+.update {
+	margin: 1rem;
+	width: 10rem;
+}
+
+.update div {
+	width: 0%;
+	height: 1rem;
+	border: 1px solid black;
+	animation-name: update_progress;
+	animation-duration: 6s;
+	animation-fill-mode: forwards;
+	background-color: black;
+}
+
+@keyframes update_progress {
+	from { width: 0%; }
+	to { width: 100%; }
+}
+
+.updating-title {
+	margin: 1rem 1rem 0 1rem;
+}
