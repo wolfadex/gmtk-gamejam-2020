@@ -16,7 +16,7 @@ const popupSound = new Audio(sound_1);
 
 render(<Game />, document.getElementById("root"))
 
-const maxPopups = 20;
+const maxPopups = 50;
 const maxLevels = 5;
 
 // GAME STATES:
@@ -35,11 +35,10 @@ function Game() {
 	const [distractionSpeed, setDistractionSpeed] = useState(3000);
 	const [score, setScore] = useState(0);
 
-	useInterval(() => {
+     useInterval(() => {
 		if (gameState === "PLAYING") {
-			const typeOfDistractions = ["POPUP", "NOTIFICATION", "UPDATE"];
+			const typeOfDistractions = ["POPUP"];
 			const distractionType = typeOfDistractions[randomInt(0, typeOfDistractions.length)];
-
 			switch(distractionType) {
 				case "POPUP":
 					setDistractions({
@@ -121,12 +120,12 @@ function Game() {
 				switch(gameState) {
 					case "MAIN_MENU":
 						return (
-							<Window left={200} top={200}>
+							<Window left={100} top={100}>
 								<div className="main-menu">
 									<button onClick={() => setGameState("PLAYING")}>
 										Start Game
 									</button>
-									<button  onClick={() => setGameState("SETTINGS_MAIN")}>
+									<button onClick={() => setGameState("SETTINGS_MAIN")}>
 										Settings
 									</button>
 								</div>
@@ -137,7 +136,7 @@ function Game() {
 					case "PLAYING":
 						return (
 							<>
-								<Terminal gameLevel={gameLevel} updateLevel={setGameLevel} updateState={setGameState} updatePopups={setPopups} commandEntered={(cmd) => {
+								<Terminal gameLevel={gameLevel} score={score} updateLevel={setGameLevel} updateState={setGameState} updateDistractions={setDistractions} updateScore={setScore} commandEntered={(cmd) => {
 									// const index = popups.findIndex((word) => word === cmd);
 
 									// if (index > -1) {
@@ -153,11 +152,11 @@ function Game() {
 													const { [id]: removed, ...rest } = distractions;
 													setDistractions(rest);
 													setScore(score + 10);
-												}}>
-													<img src={distraction.image} height="200"/>
+												}} fileName={`${id.substring(0, 3)}.png`}>
+													<img src={distraction.image} width="300"/>
 												</Window>
 											);
-										case "NOTIFICATION": 
+										case "NOTIFICATION":
 											return (
 												<Notification key={id} onClose={() => {
 													const { [id]: removed, ...rest } = distractions;
@@ -187,6 +186,8 @@ function Game() {
 						return (
 							<Window
 								key="settings"
+                                left={100}
+                                top={100}
 								onClose={() => {
 									if (gameState === "SETTINGS_MAIN") {
 										setGameState("MAIN_MENU");
@@ -245,29 +246,7 @@ function getDifference(a, b)
     return result;
 }
 
-function tabReplacer(e) {
-    if (e.keyCode === 9) { // tab was pressed
-        var target = e.target;
-
-        // get caret position/selection
-        var start = target.selectionStart;
-        var end = target.selectionEnd;
-        var value = target.value;
-
-        // set textarea value to: text before caret + tab + text after caret
-        target.value = value.substring(0, start)
-                    + "  "
-                    + value.substring(end);
-
-        // put caret at right position again (add one for the tab)
-        target.selectionStart = target.selectionEnd = start + 2;
-
-        // prevent the focus lose
-        e.preventDefault();
-    }
-}
-
-function Terminal({ commandEntered, gameLevel, updateLevel, updateState, updatePopups }) {
+function Terminal({ commandEntered, gameLevel, score, updateLevel, updateState, updateDistractions, updateScore }) {
 	const [currentInput, setCurrentInput] = useState("");
 	const [previousInputs, setPreviousInputs] = useState([]);
     const [comboCount, setComboCount] = useState(0);
@@ -308,7 +287,26 @@ function Terminal({ commandEntered, gameLevel, updateLevel, updateState, updateP
                         className="editor"
                         autoFocus
                         onChange={({ target: { value } }) => setCurrentInput(value)}
-                        onKeyDown={tabReplacer}
+                        onKeyDown={(e) => {
+                            if (e.keyCode === 9) { // tab was pressed
+                                // get caret position/selection
+                                var target = e.target;
+                                var start = target.selectionStart;
+                                var end = target.selectionEnd;
+                                var value = target.value;
+
+                                // set textarea value to: text before caret + tab + text after caret
+                                target.value = value.substring(0, start)
+                                            + "  "
+                                            + value.substring(end);
+
+                                // put caret at right position again (add one for the tab)
+                                target.selectionStart = target.selectionEnd = start + 2;
+
+                                // prevent the focus lose
+                                e.preventDefault();
+                            }
+                        }}
                         value={currentInput}
                     />
                 </div>
@@ -322,7 +320,7 @@ function Terminal({ commandEntered, gameLevel, updateLevel, updateState, updateP
                         // setSaveState('success');
                         updateLevel(++gameLevel);
                         setCurrentInput("");
-                        updatePopups({});
+                        updateDistractions({});
 
                         if (gameLevel > maxLevels) {
                             updateState("FINISHED");
@@ -347,10 +345,10 @@ function Terminal({ commandEntered, gameLevel, updateLevel, updateState, updateP
 function Window({ left, top, children, onClose, fileName }) {
 	const [position, setPosition] = useState({
 		left: left != null ? left : randomInt(10, window.innerWidth - 210),
-		top: top != null ? top : randomInt(42, window.innerHeight - 210)
+		top: top != null ? top : randomInt(20, window.innerHeight - 210)
 	});
 	const [isDragging, setDragging] = useState(false);
-	const [offset, setOffset] = useState({ x: 0, y: 0 });
+	// const [offset, setOffset] = useState({ x: 0, y: 0 });
 	const [maximized, setMaximized] = useState(false);
 	const content = (
 		<div
@@ -361,14 +359,16 @@ function Window({ left, top, children, onClose, fileName }) {
 			}}
 			className="faux-window"
 		>
-            <div className="window-control-header">
-                <div className="window-control-button-group">
-                    <button className="close" onClick={onClose}></button>
-                    <button className="maximize" onClick={() => setMaximized(!maximized)}></button>
-                    <button className="minimize"></button>
+            <div className="window-header">
+                <div className="window-control-header">
+                    <div className="window-control-button-group">
+                        <button className="close" onClick={onClose}></button>
+                        <button className="maximize" onClick={() => setMaximized(!maximized)}></button>
+                        <button className="minimize"></button>
+                    </div>
+                    <div className="window-control-filename">{fileName}</div>
                 </div>
-                <div className="window-control-filename">{fileName}</div>
-            </div>
+             </div>
 			{children}
 		</div>
 	);
@@ -381,8 +381,8 @@ function Window({ left, top, children, onClose, fileName }) {
 		<Draggable
 	        handle=".window-header"
 	        defaultPosition={{
-	        	x: left != null ? left : randomInt(10, window.innerWidth - 210),
-				y: top != null ? top : randomInt(42, window.innerHeight - 210)
+	        	x: left != null ? left : 0,
+				y: top != null ? top : 0
 	        }}
 	        position={null}
        	>
@@ -442,11 +442,15 @@ function Notification({ children }) {
 }
 
 function getUpdatingTitle() {
-	const updateNames = [
-		"Email",
-		"Browser",
+	const version = `${randomInt(0, 1000)}.${randomInt(0, 1000)}`;
+    const updateNames = [
+		"Legacy Email Client",
+		"Client Browser Interfaces",
+        "User Visual Interfaces",
+        "Upstream Downstream Dependencies",
+        "Company External Great Firewalls",
 	];
-	return updateNames[randomInt(0, updateNames.length)];
+	return `${updateNames[randomInt(0, updateNames.length)]}_${version}`;
 }
 
 function Update({ onClose, title }) {
