@@ -55,12 +55,13 @@ const keyboardSounds = [
 render(<Game />, document.getElementById("root"))
 const maxPopups = 20;
 const maxLevels = 5;
+let highScore = localStorage.getItem("ceddy-wolfadex_gmtk2020_highscore");
 
 // GAME STATES:
 // MAIN_MENU: start of the game
 // NEW_LEVEL: you get notifications about how hard this level is, and how long you have, clicking accept starts the level
 // WORK_STARTED: timer starts here
-// WORK_COMPLETE: calculate monuse clicks, keystrokes, wpm, display point total
+// WORK_COMPLETE: calculate mouse clicks, keystrokes, wpm, display point total
 // GAME_OVER: you failed, you dounce
 // SETTINGS_MAIN: settings menu but returns to main menu when closed
 // SETTINGS_PLAYING: pause screen, returns to game when closed
@@ -162,6 +163,7 @@ function Game() {
 								setScore(0);
 								dispatch({ type: "RESET" });
 								setNextId(0);
+								setGameLevel(1);
 							}}
 						>
 							New Game
@@ -172,6 +174,7 @@ function Game() {
 								setScore(0);
 								dispatch({ type: "RESET" });
 								setNextId(0);
+								setGameLevel(1);
 								bgMusic.pause();
 								bgMusic.currentTime = 0;
 							}}
@@ -183,6 +186,9 @@ function Game() {
 				<span>Edit</span>
 				<span>View</span>
 				<span>Help</span>
+				{highScore == null ? null :
+					<span className="taskbar-score">High Score: {highScore}</span>
+				}
 				<span className="taskbar-score">Score: {score}</span>
 				<span className="taskbar-spacer" />
 				<button className="taskbar-button" onClick={() => {
@@ -218,6 +224,7 @@ function Game() {
 						return (
 							<>
 								<Terminal
+									key="terminal"
 									gameLevel={gameLevel}
 									score={score}
 									updateLevel={setGameLevel}
@@ -294,6 +301,12 @@ function Game() {
 						return (
 							<div className="game-over">
 								Game Over
+							</div>
+						);
+					case "FINISHED":
+						return (
+							<div className="game-won">
+								You've Completed All The Work!
 							</div>
 						);
 				}
@@ -500,12 +513,17 @@ function Terminal({ commandEntered, gameLevel, score, updateLevel, updateState, 
                         clearDistractions();
 
                         if (gameLevel > maxLevels) {
+                        	if (highScore && highScore < score) {
+                        		localStorage.setItem("ceddy-wolfadex_gmtk2020_highscore", score);
+                        		highScore = score;
+                        	}
+                        	updateLevel(1);
+                        	setProgram(window.LEVELS[gameLevel]);
                             updateState("FINISHED");
                         } else {
                             setProgram(window.LEVELS[gameLevel]);
                             setSaveState('');
                         }
-                        console.log(gameLevel);
                     } else {
                         // failed
                         // console.log(getDifference(program.trim().replace('<br>',''), currentInput.trim()))
