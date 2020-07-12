@@ -23,11 +23,9 @@ import k8 from "./assets/keyboard/8.mp3";
 import k9 from "./assets/keyboard/9.mp3";
 import k10 from "./assets/keyboard/10.mp3";
 import k11 from "./assets/keyboard/10.mp3";
-import punch from "./assets/punch.mp3";
 
 const popupSound = new Audio(sound_1);
 const bgMusic = new Audio(bg);
-const punchSfx = new Audio(punch);
 bgMusic.loop = true;
 const key1 = new Audio(k1);
 const key2 = new Audio(k2);
@@ -480,7 +478,6 @@ function Terminal({ commandEntered, gameLevel, score, updateLevel, updateState, 
                             // sound eff
                             const randomSound = keyboardSounds[Math.floor(Math.random() * keyboardSounds.length)];
                             randomSound.play();
-                            // punchSfx.play();
 
                             // some shakes
                             // const editorDom = document.getElementById('main-editor');
