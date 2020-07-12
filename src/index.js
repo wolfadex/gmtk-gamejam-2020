@@ -275,7 +275,7 @@ function Terminal({ commandEntered, gameLevel, updateLevel, updateState, updateP
     const [program, setProgram] = useState(window.LEVELS[gameLevel]);
 
 	return (
-		<Window left={40} top={40} onClose={() => {}}>
+		<Window left={40} top={40} onClose={() => {}} fileName={'Project ' + gameLevel}>
             <div className="editor-window">
 	            <div className="editor-folders">
                     <div className="editor-title">FOLDERS</div>
@@ -337,14 +337,13 @@ function Terminal({ commandEntered, gameLevel, updateLevel, updateState, updateP
                         console.log('failed');
                     }
                 }}>Save</button>
-                <div>{gameLevel}</div>
                 <div>{saveState}</div>
             </div>
 		</Window>
 	)
 }
 
-function Window({ left, top, children, onClose }) {
+function Window({ left, top, children, onClose, fileName }) {
 	const [position, setPosition] = useState({
 		left: left != null ? left : randomInt(10, window.innerWidth - 210),
 		top: top != null ? top : randomInt(42, window.innerHeight - 210)
@@ -361,11 +360,14 @@ function Window({ left, top, children, onClose }) {
 			}}
 			className="faux-window"
 		>
-			<div className="window-header">
-                <button className="close" onClick={onClose}></button>
-				<button className="maximize" onClick={() => setMaximized(!maximized)}></button>
-                <button className="minimize"></button>
-			</div>
+            <div className="window-control-header">
+                <div className="window-control-button-group">
+                    <button className="close" onClick={onClose}></button>
+                    <button className="maximize" onClick={() => setMaximized(!maximized)}></button>
+                    <button className="minimize"></button>
+                </div>
+                <div className="window-control-filename">{fileName}</div>
+            </div>
 			{children}
 		</div>
 	);
