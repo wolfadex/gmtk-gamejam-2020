@@ -339,10 +339,28 @@ pre {
 }
 
 .game-over {
-	font-size: 12.5vh;
+	/*font-size: 12.5vh;*/
 	color: red;
 }
 
+.game-won-container {
+	padding: 20px;
+}
+
+.game-over,
 .game-won {
-	font-size: 12.5vh;
+	font-size: 25px;
+	margin-bottom: 10px;
+}
+
+.game-won-button {
+	width: 150px;
+    margin-left: 0;
+    margin-top: 20px;
+}
+
+.game-reset-button {
+	width: 250px;
+    margin-left: 0;
+    margin-top: 20px;
 }
