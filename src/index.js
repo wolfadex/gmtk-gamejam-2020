@@ -229,10 +229,15 @@ function Window({ left, top, children, onClose }) {
 	});
 	const [isDragging, setDragging] = useState(false);
 	const [offset, setOffset] = useState({ x: 0, y: 0 });
+	const [maximized, setMaximized] = useState(false);
 
 	return (
 		<div
-			style={{ left: position.left, top: position.top }}
+			style={{
+				left: maximized ? 0 : position.left,
+				top: maximized ? 32 : position.top,
+				...(maximized ? { width: window.innerWidth, height: window.innerHeight - 32 } : {})
+			}}
 			className="faux-window"
 		>
 			<div
@@ -240,8 +245,11 @@ function Window({ left, top, children, onClose }) {
 				onMouseDown={(e) => {
 					e.preventDefault();
 					e.stopPropagation();
-					setOffset({ x: e.pageX - position.left, y: e.pageY - position.top });
-					setDragging(true);
+					
+					if (!maximized) {
+						setOffset({ x: e.pageX - position.left, y: e.pageY - position.top });
+						setDragging(true);
+					}
 				}}
 				onMouseUp={(e) => {
 					e.preventDefault();
@@ -263,7 +271,7 @@ function Window({ left, top, children, onClose }) {
 				}}
 			>
                 <button className="close" onClick={onClose}></button>
-				<button className="maximize"></button>
+				<button className="maximize" onClick={() => setMaximized(!maximized)}></button>
                 <button className="minimize"></button>
 			</div>
 

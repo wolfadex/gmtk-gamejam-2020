@@ -161,6 +161,7 @@ button {
     padding: 10px 20px;
     border-radius: 5px;
     margin-left: 10px;
+    cursor: pointer;
 }
 
 pre {
