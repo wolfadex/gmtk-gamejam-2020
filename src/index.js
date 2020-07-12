@@ -358,31 +358,39 @@ function Terminal({ commandEntered, gameLevel, score, updateLevel, updateState, 
 
                             // some shakes
                             // const editorDom = document.getElementById('main-editor');
-                            const originalTop = parseFloat(e.target.style.marginTop.replace('px', '')) || 0;
-                            const originalLeft = parseFloat(e.target.style.marginLeft.replace('px', '')) || 0;
-                            switch(originalTop) {
-                                case 0:
-                                    e.target.style.marginTop = '1px';
-                                    break;
-                                case 1:
-                                    e.target.style.marginTop = '-1px';
-                                    break;
-                                case -1:
-                                    e.target.style.marginTop = '0px';
-                                    break;
-                            }
+                            // const originalTop = parseFloat(e.target.style.marginTop.replace('px', '')) || 0;
+                            // const originalLeft = parseFloat(e.target.style.marginLeft.replace('px', '')) || 0;
+                            // switch(originalTop) {
+                            //     case 0:
+                            //         if (randomInt(0, 2) === 1) {
+                            //             e.target.style.marginTop = '1px';
+                            //         } else {
+                            //             e.target.style.marginTop = '-1px';
+                            //         }
+                            //         break;
+                            //     case 1:
+                            //         e.target.style.marginTop = '0px';
+                            //         break;
+                            //     case -1:
+                            //         e.target.style.marginTop = '0px';
+                            //         break;
+                            // }
 
-                            switch(originalLeft) {
-                                case 0:
-                                    e.target.style.marginLeft = '-1px';
-                                    break;
-                                case 1:
-                                    e.target.style.marginLeft = '1px';
-                                    break;
-                                case -1:
-                                    e.target.style.marginLeft = '0px';
-                                    break;
-                            }
+                            // switch(originalLeft) {
+                            //     case 0:
+                            //         if (randomInt(0, 2) === 1) {
+                            //             e.target.style.marginLeft = '-1px';
+                            //         } else {
+                            //             e.target.style.marginLeft = '1px';
+                            //         }
+                            //         break;
+                            //     case 1:
+                            //         e.target.style.marginLeft = '0px';
+                            //         break;
+                            //     case -1:
+                            //         e.target.style.marginLeft = '0px';
+                            //         break;
+                            // }
 
                             if (e.keyCode >= 48 && e.keyCode <= 57) {
                                 // 0-9
