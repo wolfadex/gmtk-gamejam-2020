@@ -1,6 +1,13 @@
 # Ctrl
-A game about keeping control of the system.
+
+A game about finishing your work without letting the distractions get out of control. [Play Here](https://wolfadex.github.io/gmtk-gamejam-2020/)
+
+<img src="./screenshot_title-screen.png" width=600 />
+
+<img src="./screenshot_game-play.png" width=600 />
+
 =======
+
 To get started run:
 
 - `npm i`
