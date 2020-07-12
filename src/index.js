@@ -155,7 +155,9 @@ function randomInt(min, max) {
 function Terminal({ commandEntered }) {
 	const [currentInput, setCurrentInput] = useState("");
 	const [previousInputs, setPreviousInputs] = useState([]);
-    const foo = `// Your First C++ Program
+    const [comboCount, setComboCount] = useState(0);
+    const [saveState, setSaveState] = useState("");
+    const program = `// Your First C++ Program
 #include <iostream>
 using namespace std;
 <br>
@@ -166,7 +168,7 @@ int main() {
 
 	return (
 		<Window left={40} top={40} onClose={() => {}}>
-			<div className="editor-window">
+            <div className="editor-window">
 	            <div className="editor-folders">
                     <div className="editor-title">FOLDERS</div>
                     <ul>
@@ -186,7 +188,7 @@ int main() {
                 </div>
     			<div className="editor-tab">
                     <div className="shadow-text">
-                        {foo.split("\n").map((i,key) => {
+                        {program.split("\n").map((i,key) => {
                             if (i.trim() === "<br>") {
                                 return <br key={key}></br>;
                             }
@@ -202,6 +204,20 @@ int main() {
                     />
                 </div>
 			</div>
+            <div className="save-container">
+                <div>{saveState}</div>
+                <button className="save-button" onClick={() => {
+                    if (program.replace('<br>','') === currentInput.trim()) {
+                        // success
+                        setSaveState('success');
+                        console.log('success');
+                    } else {
+                        // failed
+                        setSaveState('failed');
+                        console.log('failed');
+                    }
+                }}>Save</button>
+            </div>
 		</Window>
 	)
 }

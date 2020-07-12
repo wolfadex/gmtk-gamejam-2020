@@ -136,12 +136,19 @@ button.minimize {
 
 .shadow-text {
 	padding: 3px;
-	opacity: 0.1;
+	opacity: 0.3;
 	position: absolute;
 	z-index: 0;
 	line-height: 16px;
 	margin-left: -1px;
     margin-top: -1px;
+}
+
+.save-container {
+
+}
+
+.save-button {
 }
 
 pre {
