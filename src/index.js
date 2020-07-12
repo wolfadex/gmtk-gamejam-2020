@@ -24,8 +24,8 @@ function Game() {
 
 	useInterval(() => {
 		if (gameState === "PLAYING") {
-			// setPopups({...popups, [uuidv4()]: getPhoto() });
-			// popupSound.play();
+			setPopups({...popups, [uuidv4()]: getPhoto() });
+			popupSound.play();
 		}
 	}, distractionSpeed);
 
@@ -52,7 +52,7 @@ function Game() {
 				switch(gameState) {
 					case "MAIN_MENU":
 						return (
-							<Window>
+							<Window left={200} top={200}>
 								<div className="main-menu">
 									<button onClick={() => setGameState("PLAYING")}>
 										Start Game
