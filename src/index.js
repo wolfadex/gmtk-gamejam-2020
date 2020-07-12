@@ -2,8 +2,12 @@ import React, { useState, useEffect, useRef } from "react";
 import { render } from "react-dom";
 import dog_1 from "./assets/dog_1.jpg";
 import dog_2 from "./assets/dog_2.jpg";
-import cat_1_1 from "./assets/cat_1_1.jpg";
-import cat_2_1 from "./assets/cat_2_1.jpg";
+import dog_3 from "./assets/dog_3.jpg";
+import cat_1 from "./assets/cat_1.jpg";
+import cat_2 from "./assets/cat_2.jpg";
+import cat_3 from "./assets/cat_3.jpg";
+import cat_4 from "./assets/cat_4.jpg";
+import cat_5 from "./assets/cat_5.jpg";
 import sound_1 from "./assets/sound_1.wav";
 
 const popupSound = new Audio(sound_1);
@@ -11,36 +15,94 @@ const popupSound = new Audio(sound_1);
 
 render(<Game />, document.getElementById("root"))
 
+const maxPopups = 20;
 
 function Game() {
 	const [popups, setPopups] = useState({});
+	const [gameState, setGameState] = useState("MAIN_MENU");
+	const [distractionSpeed, setDistractionSpeed] = useState(3000);
 
-	// useInterval(() => {
-	// 	setPopups({...popups, [uuidv4()]: getPhoto() });
-	// 	popupSound.play();
-	// }, 3000);
+	useInterval(() => {
+		if (gameState === "PLAYING") {
+			setPopups({...popups, [uuidv4()]: getPhoto() });
+			popupSound.play();
+		}
+	}, distractionSpeed);
 
 	return (
 		<>
-			<div className="taskbar">BananaOS</div>
-			<Terminal commandEntered={(cmd) => {
-				// const index = popups.findIndex((word) => word === cmd);
+			<div className="taskbar">
+				BananaoS
+				<span className="taskbar-spacer" />
+				<button className="taskbar-button" onClick={() => {
+					if (gameState === "MAIN_MENU") {
+						setGameState("SETTINGS_MAIN");
+					} else {
+						setGameState("SETTINGS_PLAYING");
+					}
+				}}>
+					<i className="fa fa-cog" aria-hidden="true"></i>
+				</button>
+			</div>
+			{(function() {
+				switch(gameState) {
+					case "MAIN_MENU":
+						return (
+							<Window>
+								<div className="main-menu">
+									<button onClick={() => setGameState("PLAYING")}>
+										Start Game
+									</button>
+									<button  onClick={() => setGameState("SETTINGS_MAIN")}>
+										Settings
+									</button>
+								</div>
+							</Window>
+						);
+					case "PLAYING":
+						return (
+							<>
+								<Terminal commandEntered={(cmd) => {
+									// const index = popups.findIndex((word) => word === cmd);
 
-				// if (index > -1) {
-				// 	popups.splice(index, 1);
-				// 	setPopups(popups);
-				// }
-			}}/>
-			{Object.entries(popups).map(([id, image ]) => {
-				return (
-					<Window key={id} onClose={() => {
-						const { [id]: removed, ...rest } = popups;
-						setPopups(rest);
-					}}>
-						<img src={image} height="200"/>
-					</Window>
-				);
-			})}
+									// if (index > -1) {
+									// 	popups.splice(index, 1);
+									// 	setPopups(popups);
+									// }
+								}}/>
+								{Object.entries(popups).map(([id, image ]) => {
+									return (
+										<Window key={id} onClose={() => {
+											const { [id]: removed, ...rest } = popups;
+											setPopups(rest);
+										}}>
+											<img src={image} height="200"/>
+										</Window>
+									);
+								})}
+							</>
+						);
+					case "SETTINGS_MAIN":
+					case "SETTINGS_PLAYING":
+						return (
+							<Window
+								key="settings"
+								onClose={() => {
+									if (gameState === "SETTINGS_MAIN") {
+										setGameState("MAIN_MENU");
+									} else {
+										setGameState("PLAYING");
+									}
+								}}
+							>
+								<label className="setting">
+									Distraction Interval:
+									<input type="range" value={distractionSpeed / 100} min={5} max={50} onChange={({ target: { value } }) => setDistractionSpeed(value * 100)} />
+								</label>
+							</Window>
+						);
+				}
+			})()}
 		</>
 	);
 }
@@ -146,6 +208,7 @@ function Window({ left, top, children, onClose }) {
 		top: top != null ? top : randomInt(42, window.innerHeight - 210)
 	});
 	const [isDragging, setDragging] = useState(false);
+	const [offset, setOffset] = useState({ x: 0, y: 0 });
 
 	return (
 		<div
@@ -157,6 +220,7 @@ function Window({ left, top, children, onClose }) {
 				onMouseDown={(e) => {
 					e.preventDefault();
 					e.stopPropagation();
+					setOffset({ x: e.pageX - position.left, y: e.pageY - position.top });
 					setDragging(true);
 				}}
 				onMouseUp={(e) => {
@@ -171,10 +235,9 @@ function Window({ left, top, children, onClose }) {
 				}}
 				onMouseMove={(e) => {
 					if (isDragging) {
-						// debugger;
 						setPosition({
-							left: position.left + e.movementX,
-							top: position.top + e.movementY,
+							left: e.pageX - offset.x,
+							top: e.pageY - offset.y,
 						});
 					}
 				}}
@@ -217,8 +280,12 @@ function uuidv4() {
 }
 
 function getPhoto() {
-	const photos = [dog_1, dog_2, cat_1_1, cat_2_1];
+	const photos = [dog_1, dog_2, dog_3, cat_1, cat_2, cat_3, cat_4, cat_5];
 	const index = randomInt(0, photos.length);
 
   	return photos[index]
 }
+
+
+
+// <div>Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
