@@ -24,15 +24,15 @@ function Game() {
 
 	useInterval(() => {
 		if (gameState === "PLAYING") {
-			setPopups({...popups, [uuidv4()]: getPhoto() });
-			popupSound.play();
+			// setPopups({...popups, [uuidv4()]: getPhoto() });
+			// popupSound.play();
 		}
 	}, distractionSpeed);
 
 	return (
 		<>
 			<div className="taskbar">
-				<span className="title">BananoS</span>
+				<span className="title">MangoOS</span>
 				<span>File</span>
 				<span>Edit</span>
 				<span>View</span>
@@ -155,7 +155,9 @@ function randomInt(min, max) {
 function Terminal({ commandEntered }) {
 	const [currentInput, setCurrentInput] = useState("");
 	const [previousInputs, setPreviousInputs] = useState([]);
-    const foo = `// Your First C++ Program
+    const [comboCount, setComboCount] = useState(0);
+    const [saveState, setSaveState] = useState("");
+    const program = `// Your First C++ Program
 #include <iostream>
 using namespace std;
 <br>
@@ -166,14 +168,14 @@ int main() {
 
 	return (
 		<Window left={40} top={40} onClose={() => {}}>
-			<div className="editor-window">
+            <div className="editor-window">
 	            <div className="editor-folders">
                     <div className="editor-title">FOLDERS</div>
                     <ul>
                         <li>.github</li>
                         <li>dist</li>
                         <li>src</li>
-                        <li className="highlighted">work.cpp</li>
+                        <li className="highlighted">work.cp</li>
                         <li>README.md</li>
                     </ul>
                 </div>
@@ -186,7 +188,7 @@ int main() {
                 </div>
     			<div className="editor-tab">
                     <div className="shadow-text">
-                        {foo.split("\n").map((i,key) => {
+                        {program.split("\n").map((i,key) => {
                             if (i.trim() === "<br>") {
                                 return <br key={key}></br>;
                             }
@@ -202,6 +204,20 @@ int main() {
                     />
                 </div>
 			</div>
+            <div className="save-container">
+                <button className="save-button" onClick={() => {
+                    if (program.replace('<br>','') === currentInput.trim()) {
+                        // success
+                        setSaveState('success');
+                        console.log('success');
+                    } else {
+                        // failed
+                        setSaveState('failed');
+                        console.log('failed');
+                    }
+                }}>Save</button>
+                <div>{saveState}</div>
+            </div>
 		</Window>
 	)
 }

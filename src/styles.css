@@ -136,12 +136,31 @@ button.minimize {
 
 .shadow-text {
 	padding: 3px;
-	opacity: 0.1;
+	opacity: 0.3;
 	position: absolute;
 	z-index: 0;
 	line-height: 16px;
 	margin-left: -1px;
     margin-top: -1px;
+}
+
+.save-container {
+	display: flex;
+	justify-content: space-between;
+	padding: 20px;
+	position: absolute;
+	bottom: 0;
+	width: 94%;
+	align-items: center;
+}
+
+button {
+	background: #666;
+	font-family: 'Inconsolata', monospace;
+	color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    margin-left: 10px;
 }
 
 pre {
