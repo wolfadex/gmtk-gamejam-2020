@@ -21,6 +21,7 @@ function Game() {
 	const [popups, setPopups] = useState({});
 	const [gameState, setGameState] = useState("MAIN_MENU");
 	const [distractionSpeed, setDistractionSpeed] = useState(3000);
+	const [score, setScore] = useState(0);
 
 	useInterval(() => {
 		if (gameState === "PLAYING") {
@@ -33,10 +34,33 @@ function Game() {
 		<>
 			<div className="taskbar">
 				<span className="title">MangoOS</span>
-				<span>File</span>
+				<span>
+					File
+					<div className="taskbar-menu">
+						<span
+							onClick={() => {
+								setGameState("PLAYING");
+								setScore(0);
+								setPopups({});
+							}}
+						>
+							New Game
+						</span>
+						<span
+							onClick={() => {
+								setGameState("MAIN_MENU");
+								setScore(0);
+								setPopups({});
+							}}
+						>
+							Quit
+						</span>
+					</div>
+				</span>
 				<span>Edit</span>
 				<span>View</span>
 				<span>Help</span>
+				<span>Score: {score}</span>
 				<span className="taskbar-spacer" />
 				<button className="taskbar-button" onClick={() => {
 					if (gameState === "MAIN_MENU") {
@@ -79,6 +103,7 @@ function Game() {
 										<Window key={id} onClose={() => {
 											const { [id]: removed, ...rest } = popups;
 											setPopups(rest);
+											setScore(score + 10);
 										}}>
 											<img src={image} height="200"/>
 										</Window>
